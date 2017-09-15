@@ -14,6 +14,15 @@ struct Pieza{
     int posicionOrigenX;
     int posicionOrigenY;
 };
+
+// voids
+void arreglar(Pieza tablero[8][8],int turno);
+void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+void Inicializar_Tablero(Pieza Tablero[8][8]);
+// bools
+bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -70,7 +79,8 @@ void Inicializar_Tablero(Pieza Tablero[8][8])
                 Tablero[y][x].posicionOrigenX = x;
                 Tablero[y][x].posicionOrigenY = y;
             }
-            else if((x == 0 || x == 7) && y == 7){// a partir de aca es con las fichas blancas
+            // a partir de aca es con las fichas blancas
+            else if((x == 0 || x == 7) && y == 7){
                 Tablero[y][x].id_pieza = torre;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = true;
@@ -235,4 +245,52 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy
     Tablero[cordenaday][cordenadax].movimiento = false;
     Tablero[cordenaday][cordenadax].posicionOrigenX = cordenadax;
     Tablero[cordenaday][cordenadax].posicionOrigenY = cordenaday;
+}
+void arreglar(Pieza tablero[8][8],int turno){ // este void pasa por las filas 4 y 6 para verificar que los peones que ya se movieron dos movimientos tengan la variable movimiento en true
+    if(turno == 0){                           // de esta forma no se permite comer al paso si la oportunidad de hacerlo no se ejecuto el turno anterior.
+        for(int i = 0;i < 8;i++){
+            if(tablero[3][i].id_pieza == peon && (!tablero[3][i].movimiento)){
+                tablero[3][i].movimiento = true;
+            }
+        }
+    }
+    if(turno == 1){
+        for(int i = 0;i < 8;i++){
+            if(tablero[4][i].id_pieza == peon && (!tablero[4][i].movimiento)){
+                tablero[4][i].movimiento = true;
+            }
+        }
+    }
+}
+bool reyesVivos(Pieza tablero[8][8]){ // esta funcion verifica si los reyes siguen vivos. De estarlos la funcion devolvera True, caso contrario la repuesta sera False
+  int reyes = 0;
+  for(int y = 0;y < 8;y++){
+      for(int x = 0;x < 8;x++){
+          if(tablero[y][x].id_pieza == rey){
+              reyes++;
+              if(tablero[y][x].color == 127 || tablero[y][x].color == 111){
+                  ganador = false;
+              }
+              else{
+                  ganador = true;
+              }
+          }
+      }
+  }
+  if(reyes != 2){
+      color(15);
+      system("cls");
+      cout << "han ganado las ";
+      if(ganador == false){
+          cout << "blancas" << endl;
+      }
+      else{
+          cout << "negras" << endl;
+      }
+      system("pause");
+      system("cls");
+      return False;
+      break;
+  }
+  return True;
 }
