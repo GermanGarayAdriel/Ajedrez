@@ -23,6 +23,8 @@ void Inicializar_Tablero(Pieza Tablero[8][8]);
 bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
 bool seguir(Pieza tablero[8][8]);
 bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
+// ints
+int jaque(Pieza Tablero[8][8],int turno);
 
 void setup() {
   // put your setup code here, to run once:
@@ -294,4 +296,108 @@ bool seguir(Pieza tablero[8][8]){ // esta funcion verifica si los reyes siguen v
       break;
   }
   return True;
+}
+int jaque(Pieza Tablero[8][8],int turno){ // esta funcion verifica si alguno de los reyes esta en jaque. si el rey blanco esta en jaque devuelve 1 y si el que esta en jaque es el rey negro
+                                          // retorna 2, pero si ninguno esta en jaque la función devuelve 0
+    int reyBlanco[2]; // la posicion del rey es un array de 2 para guardar X e Y
+    int reyNegro[2];
+    for(int y = 0;y < 8;y++){
+        for(int x = 0;x < 8;x++){
+            if(Tablero[y][x].id_pieza == rey){
+                if(Tablero[y][x].color == 127 || Tablero[y][x].color == 111){
+                    reyBlanco[0] = y;
+                    reyBlanco[1] = x;
+                }
+                else{
+                    reyNegro[0] = y;
+                    reyNegro[1] = x;
+                }
+            }
+        }
+    }
+    for(int x = 0;x < 8;x++){
+        if(reyBlanco[1]+x < 8){
+            if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0],reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
+                return 1;
+            }
+        }
+        if(reyBlanco[1]-x >= 0){
+            if((Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0],reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x)){
+                return 1;
+            }
+        }
+        if(reyNegro[1]+x < 8){
+            if((Tablero[reyNegro[0]][reyNegro[1]+x].id_pieza == torre || Tablero[reyNegro[0]][reyNegro[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0],reyNegro[1]+x,1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0],reyNegro[1]+x)){
+                return 2;
+            }
+        }
+        if(reyNegro[1]-x >= 0){
+            if((Tablero[reyNegro[0]][reyNegro[1]-x].id_pieza == torre || Tablero[reyNegro[0]][reyNegro[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0],reyNegro[1]-x,1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0],reyNegro[1]-x)){
+                return 2;
+            }
+        }
+        if(reyBlanco[0]+x < 8){
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1],0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1])){
+                return 1;
+            }
+        }
+        if(reyBlanco[0]-x >= 0){
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1],0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1])){
+                return 1;
+            }
+        }
+        if(reyNegro[0]+x < 8){
+            if((Tablero[reyNegro[0]+x][reyNegro[1]].id_pieza == torre || Tablero[reyNegro[0]+x][reyNegro[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]+x,reyNegro[1],1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]+x,reyNegro[1])){
+                return 2;
+            }
+        }
+        if(reyNegro[0]-x >= 0){
+            if((Tablero[reyNegro[0]-x][reyNegro[1]].id_pieza == torre || Tablero[reyNegro[0]-x][reyNegro[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]-x,reyNegro[1],1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]-x,reyNegro[1])){
+                return 2;
+            }
+        }
+        //alfil
+        if(reyBlanco[1]+x < 8 && reyBlanco[0]+x < 8){
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
+                return 1;
+            }
+        }
+        if(reyBlanco[1]-x >= 0 && reyBlanco[0]-x >= 0){
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
+                return 1;
+            }
+        }
+        if(reyBlanco[0]+x < 8 && reyBlanco[1]-x >= 0){
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
+                return 1;
+            }
+        }
+        if(reyBlanco[0]-x >= 0 && reyBlanco[1]+x < 8){
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
+                return 1;
+            }
+        }
+        //alfil negro
+        if(reyNegro[1]+x < 8 && reyNegro[0]+x < 8){
+            if((Tablero[reyNegro[0]+x][reyNegro[1]+x].id_pieza == torre || Tablero[reyNegro[0]+x][reyNegro[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]+x,reyNegro[1]+x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]+x,reyNegro[1]+x)){
+                return 2;
+            }
+        }
+        if(reyNegro[1]-x >= 0 && reyNegro[0]-x >= 0){
+            if((Tablero[reyNegro[0]-x][reyNegro[1]-x].id_pieza == torre || Tablero[reyNegro[0]][reyNegro[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]-x,reyNegro[1]-x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]-x,reyNegro[1]-x)){
+                return 2;
+            }
+        }
+        if(reyNegro[0]+x < 8 && reyNegro[1]-x >= 0){
+            if((Tablero[reyNegro[0]+x][reyNegro[1]-x].id_pieza == torre || Tablero[reyNegro[0]+x][reyNegro[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]+x,reyNegro[1]-x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]+x,reyNegro[1]-x)){
+                return 2;
+            }
+        }
+        if(reyNegro[0]-x >= 0 && reyNegro[1]+x < 8){
+            if((Tablero[reyNegro[0]-x][reyNegro[1]+x].id_pieza == torre || Tablero[reyNegro[0]-x][reyNegro[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]-x,reyNegro[1]+x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]-x,reyNegro[1]+x)){
+                return 2;
+            }
+        }
+    }
+    return 0;
 }
