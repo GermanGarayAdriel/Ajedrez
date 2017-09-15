@@ -21,6 +21,7 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy
 void Inicializar_Tablero(Pieza Tablero[8][8]);
 // bools
 bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+bool seguir(Pieza tablero[8][8]);
 bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
 
 void setup() {
@@ -262,7 +263,7 @@ void arreglar(Pieza tablero[8][8],int turno){ // este void pasa por las filas 4 
         }
     }
 }
-bool reyesVivos(Pieza tablero[8][8]){ // esta funcion verifica si los reyes siguen vivos. De estarlos la funcion devolvera True, caso contrario la repuesta sera False
+bool seguir(Pieza tablero[8][8]){ // esta funcion verifica si los reyes siguen vivos. De estarlos la funcion devolvera True, caso contrario la repuesta sera False
   int reyes = 0;
   for(int y = 0;y < 8;y++){
       for(int x = 0;x < 8;x++){
