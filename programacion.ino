@@ -267,31 +267,26 @@ void arreglar(Pieza tablero[8][8],int turno){ // este void pasa por las filas 4 
 }
 bool seguir(Pieza tablero[8][8]){ // esta funcion verifica si los reyes siguen vivos. De estarlos la funcion devolvera True, caso contrario la repuesta sera False
   int reyes = 0;
+  bool ganador = false
   for(int y = 0;y < 8;y++){
       for(int x = 0;x < 8;x++){
           if(tablero[y][x].id_pieza == rey){
               reyes++;
-              if(tablero[y][x].color == 127 || tablero[y][x].color == 111){
-                  ganador = false;
-              }
-              else{
-                  ganador = true;
-              }
+              ganador = tablero[y][x].color // aca inserta quien es el ultimo rey que vio, y si el otro rey esta muerto tambien es el unico rey que va a ver
           }
       }
   }
-  if(reyes != 2){
-      color(15);
-      system("cls");
-      cout << "han ganado las ";
+  if(reyes != 2){// si hay un solo rey entra aca
+      system("cls");//hay que cambiar esto
+      cout << "han ganado las ";//y hay que cambiar todos los cout de aca y talvez sea mejor unir este cout con el de sus respectivos ganadores
       if(ganador == false){
           cout << "blancas" << endl;
       }
       else{
           cout << "negras" << endl;
       }
-      system("pause");
-      system("cls");
+      system("pause");// y tambien esto...
+      system("cls");// y esto.
       return False;
       break;
   }
@@ -304,7 +299,7 @@ int jaque(Pieza Tablero[8][8],int turno){ // esta funcion verifica si alguno de 
     for(int y = 0;y < 8;y++){
         for(int x = 0;x < 8;x++){
             if(Tablero[y][x].id_pieza == rey){
-                if(Tablero[y][x].color == 127 || Tablero[y][x].color == 111){
+                if(Tablero[y][x].color == false){
                     reyBlanco[0] = y;
                     reyBlanco[1] = x;
                 }
