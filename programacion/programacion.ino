@@ -7,8 +7,6 @@
 #define caballo 5
 #define peon 6
 
-#include <Wifi.h>
-
 struct Pieza{
     bool color;
     int id_pieza=0;
@@ -19,19 +17,18 @@ struct Pieza{
 
 Pieza tablero[8][8]
 
-// voids
-void arreglar(Pieza tablero[8][8],int turno);
-void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
-void Inicializar_Tablero(Pieza Tablero[8][8]);
-// bools
-bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
-bool seguir(Pieza tablero[8][8]);
-bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
-// ints
-int jaque(Pieza Tablero[8][8],int turno);
-
 void setup() {
-  // put your setup code here, to run once:
+  
+  // void
+  void arreglar(Pieza tablero[8][8],int turno);
+  void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+  void Inicializar_Tablero(Pieza Tablero[8][8]);
+  // bool
+  bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+  bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+  bool seguir(Pieza tablero[8][8]);
+  bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
+  bool jaque(Pieza Tablero[8][8],int turno);
 
 }
 
@@ -42,7 +39,7 @@ void loop() {
     //Lee mensaje
     //Gana o pierde? (Iluminar)
     //Actualizar el movimiento enemigo (comió? cambió?)
-    //Busca jaque (Mostrar de donde e iluminar el boton)
+    //Busca jaque (Hay? Mostrar desde donde e iluminar el boton)
     //Imprimir menu (tiempo, ultimo movimiento y menu: enroque corto, largo, ofrecer tablas y rendirse)
       //Se rinde? 
     //CICLO    
@@ -53,6 +50,7 @@ void loop() {
     //Envia mensaje (Cambia de tablero)
   }
 }
+
 void Inicializar_Tablero(Pieza Tablero[8][8])
 {
     for(int y = 0;y < 8;  y++){
@@ -147,8 +145,8 @@ void Inicializar_Tablero(Pieza Tablero[8][8])
     }
 }
 
-bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno){
-    // aca se ingresan todas las posiciones del tablero, la pieza a mover, hacia donde se movio y el turno (para que no se muevan piezas blancas en turno de negras
+bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno){ //Se verifica el movimiento de una pieza
+  
     int comprobantey, comprobantex;
     comprobantey = cordenaday - movimientoy;    //comporabante X e Y sirven pasa saber cuanto se movio independiente mente de su direccion
     comprobantex = cordenadax - movimientox;    //solo en el peon es necesario saber si el movimiento fue positivo o negativo
@@ -181,7 +179,7 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
     return true;
 }
 
-bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){
+bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){ //Verifica si hay alguna pieza entre dos posiciones
     int comprobantey, comprobantex;
     comprobantey = cordenaday - movimientoy;
     comprobantex = cordenadax - movimientox;
@@ -241,7 +239,7 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
     }
     return true;
 }
-void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){
+void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){ //Cambia la pieza de un lugar a otro
     int comprobante;
     comprobante = cordenaday - movimientoy;
     comprobante = sqrt(pow(comprobante,2));
@@ -284,20 +282,15 @@ void arreglar(Pieza tablero[8][8],int turno){ // este void pasa por las filas 4 
     }
 }
 
-int jaque(Pieza Tablero[8][8],int turno){ // esta funcion verifica si alguno de los reyes esta en jaque. si el rey blanco esta en jaque devuelve 1 y si el que esta en jaque es el rey negro
-                                          // retorna 2, pero si ninguno esta en jaque la función devuelve 0
+bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifica si el rey está en jaque. También devuelve el lugar desde donde se está haciendo el jaque.
+                                          
     int reyBlanco[2]; // la posicion del rey es un array de 2 para guardar X e Y
-    int reyNegro[2];
     for(int y = 0;y < 8;y++){
         for(int x = 0;x < 8;x++){
             if(Tablero[y][x].id_pieza == rey){
-                if(Tablero[y][x].color == false){
+                if(Tablero[y][x].color == color){
                     reyBlanco[0] = y;
                     reyBlanco[1] = x;
-                }
-                else{
-                    reyNegro[0] = y;
-                    reyNegro[1] = x;
                 }
             }
         }
@@ -305,86 +298,136 @@ int jaque(Pieza Tablero[8][8],int turno){ // esta funcion verifica si alguno de 
     for(int x = 0;x < 8;x++){
         if(reyBlanco[1]+x < 8){
             if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0],reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
-                return 1;
+                lugar[0] = reyBlanco[0]
+                lugar[1] = reyBlanco[1]+x
+                return true;
             }
         }
         if(reyBlanco[1]-x >= 0){
             if((Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0],reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x)){
-                return 1;
-            }
-        }
-        if(reyNegro[1]+x < 8){
-            if((Tablero[reyNegro[0]][reyNegro[1]+x].id_pieza == torre || Tablero[reyNegro[0]][reyNegro[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0],reyNegro[1]+x,1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0],reyNegro[1]+x)){
-                return 2;
-            }
-        }
-        if(reyNegro[1]-x >= 0){
-            if((Tablero[reyNegro[0]][reyNegro[1]-x].id_pieza == torre || Tablero[reyNegro[0]][reyNegro[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0],reyNegro[1]-x,1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0],reyNegro[1]-x)){
-                return 2;
+                lugar[0] = reyBlanco[0]
+                lugar[1] = reyBlanco[1]-x
+                return true;
             }
         }
         if(reyBlanco[0]+x < 8){
             if((Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1],0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1])){
-                return 1;
+                lugar[0] = reyBlanco[0]+x
+                lugar[1] = reyBlanco[1]
+                return true;
             }
         }
         if(reyBlanco[0]-x >= 0){
             if((Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1],0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1])){
-                return 1;
-            }
-        }
-        if(reyNegro[0]+x < 8){
-            if((Tablero[reyNegro[0]+x][reyNegro[1]].id_pieza == torre || Tablero[reyNegro[0]+x][reyNegro[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]+x,reyNegro[1],1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]+x,reyNegro[1])){
-                return 2;
-            }
-        }
-        if(reyNegro[0]-x >= 0){
-            if((Tablero[reyNegro[0]-x][reyNegro[1]].id_pieza == torre || Tablero[reyNegro[0]-x][reyNegro[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]-x,reyNegro[1],1) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]-x,reyNegro[1])){
-                return 2;
+                lugar[0] = reyBlanco[0]-x
+                lugar[1] = reyBlanco[1]
+                return true;
             }
         }
         //alfil
         if(reyBlanco[1]+x < 8 && reyBlanco[0]+x < 8){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
-                return 1;
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
+                lugar[0] = reyBlanco[0]+x
+                lugar[1] = reyBlanco[1]+x
+                return true;
             }
         }
         if(reyBlanco[1]-x >= 0 && reyBlanco[0]-x >= 0){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
-                return 1;
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
+                lugar[0] = reyBlanco[0]-x
+                lugar[1] = reyBlanco[1]-x
+                return true;
             }
         }
         if(reyBlanco[0]+x < 8 && reyBlanco[1]-x >= 0){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
-                return 1;
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
+                lugar[0] = reyBlanco[0]+x
+                lugar[1] = reyBlanco[1]-x
+                return true;
             }
         }
         if(reyBlanco[0]-x >= 0 && reyBlanco[1]+x < 8){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
-                return 1;
-            }
-        }
-        //alfil negro
-        if(reyNegro[1]+x < 8 && reyNegro[0]+x < 8){
-            if((Tablero[reyNegro[0]+x][reyNegro[1]+x].id_pieza == torre || Tablero[reyNegro[0]+x][reyNegro[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]+x,reyNegro[1]+x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]+x,reyNegro[1]+x)){
-                return 2;
-            }
-        }
-        if(reyNegro[1]-x >= 0 && reyNegro[0]-x >= 0){
-            if((Tablero[reyNegro[0]-x][reyNegro[1]-x].id_pieza == torre || Tablero[reyNegro[0]][reyNegro[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]-x,reyNegro[1]-x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]-x,reyNegro[1]-x)){
-                return 2;
-            }
-        }
-        if(reyNegro[0]+x < 8 && reyNegro[1]-x >= 0){
-            if((Tablero[reyNegro[0]+x][reyNegro[1]-x].id_pieza == torre || Tablero[reyNegro[0]+x][reyNegro[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]+x,reyNegro[1]-x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]+x,reyNegro[1]-x)){
-                return 2;
-            }
-        }
-        if(reyNegro[0]-x >= 0 && reyNegro[1]+x < 8){
-            if((Tablero[reyNegro[0]-x][reyNegro[1]+x].id_pieza == torre || Tablero[reyNegro[0]-x][reyNegro[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyNegro[0]-x,reyNegro[1]+x,0) && intercepcion(Tablero,reyNegro[0],reyNegro[1],reyNegro[0]-x,reyNegro[1]+x)){
-                return 2;
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
+                lugar[0] = reyBlanco[0]-x
+                lugar[1] = reyBlanco[1]+x
+                return true;
             }
         }
     }
-    return 0;
+    return false;
+}
+bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox){ //Enciende los LEDs que conforman el camino del jaque
+    int comprobantey, comprobantex;
+    comprobantey = cordenaday - movimientoy;
+    comprobantex = cordenadax - movimientox;
+    comprobantex = sqrt(pow(comprobantex,2));
+    comprobantey = sqrt(pow(comprobantey,2));
+    int leds[2];
+    if(comprobantex == comprobantey){ // si la pieza se mueve en diagonal utiliza este IF
+        for(int i = 1;i < comprobantex;i++){
+            leds[0] = cordenadax + i;
+            leds[1] = cordenaday + i;
+            if(cordenadax < movimientox && cordenaday < movimientoy){
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday+i][cordenadax+i].id_pieza != 0){
+                    return false;
+                }
+            }
+            else if(cordenadax > movimientox && cordenaday > movimientoy){
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday-i][cordenadax-i].id_pieza != 0){
+                    return false;
+                }
+            }
+            else if(cordenadax < movimientox && cordenaday > movimientoy){
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday-i][cordenadax+i].id_pieza != 0){
+                    return false;
+                }
+            }
+            else if(cordenadax > movimientox && cordenaday < movimientoy){
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday+i][cordenadax-i].id_pieza != 0){
+                    return false;
+                }
+            }
+        }
+    }
+    else if(comprobantex == 0){ // si se mueve de forma vertical utiliza este IF
+        leds[0] = cordenadax
+        for(int i = 1;i < comprobantey;i++){ // mueve la pieza de lugar en lugar hasta hallar a una pieza
+            leds[1] = cordenaday + i
+            if(cordenaday < movimientoy){ // va de arriba a abajo
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday+i][cordenadax].id_pieza != 0){ // si encuentra un lugar en con una id valida significa que hay una pieza y devuelve false *2
+                    return false;
+                }
+            }
+            else if(cordenaday > movimientoy){ // va de abajo a arriba
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday-i][cordenadax].id_pieza != 0){ // * same2
+                    return false;
+                }
+            }
+        }
+    }
+    else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
+        leds[1] = cordenaday
+        for(int i = 1;i < comprobantex;i++){
+            leds[0] = cordenaday + i
+            if(cordenadax < movimientox){ // va de izquierda a derecha
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday][cordenadax+i].id_pieza != 0){ // * same2
+                    return false;
+                }
+            }
+            else if(cordenadax > movimientox){ // va de derecha a izquierda
+                //prenden el led de la cordenada leds[]
+                if(Tablero[cordenaday][cordenadax-i].id_pieza != 0){ // * same2
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }
