@@ -7,6 +7,8 @@
 #define caballo 5
 #define peon 6
 
+#include <Wifi.h>
+
 struct Pieza{
     bool color;
     int id_pieza=0;
@@ -14,6 +16,8 @@ struct Pieza{
     int posicionOrigenX;
     int posicionOrigenY;
 };
+
+Pieza tablero[8][8]
 
 // voids
 void arreglar(Pieza tablero[8][8],int turno);
@@ -32,8 +36,22 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+  Inicializar_Tablero(tablero[8][8]);
+  while(true){
+    
+    //Lee mensaje
+    //Gana o pierde? (Iluminar)
+    //Actualizar el movimiento enemigo (comió? cambió?)
+    //Busca jaque (Mostrar de donde e iluminar el boton)
+    //Imprimir menu (tiempo, ultimo movimiento y menu: enroque corto, largo, ofrecer tablas y rendirse)
+      //Se rinde? 
+    //CICLO    
+      //Esperar movimiento del chaboncito (Mostrar posiciones posibles, ofrecer movimientos especiales)
+      //Verificar movimiento (Si está mal poner el tablero en rojo. Si mueve varios titila en rojo el boton tambien. Verificar captura al paso)
+    //Coronacion?
+    //Espera boton
+    //Envia mensaje (Cambia de tablero)
+  }
 }
 void Inicializar_Tablero(Pieza Tablero[8][8])
 {
@@ -265,33 +283,7 @@ void arreglar(Pieza tablero[8][8],int turno){ // este void pasa por las filas 4 
         }
     }
 }
-bool seguir(Pieza tablero[8][8]){ // esta funcion verifica si los reyes siguen vivos. De estarlos la funcion devolvera True, caso contrario la repuesta sera False
-  int reyes = 0;
-  bool ganador = false
-  for(int y = 0;y < 8;y++){
-      for(int x = 0;x < 8;x++){
-          if(tablero[y][x].id_pieza == rey){
-              reyes++;
-              ganador = tablero[y][x].color // aca inserta quien es el ultimo rey que vio, y si el otro rey esta muerto tambien es el unico rey que va a ver
-          }
-      }
-  }
-  if(reyes != 2){// si hay un solo rey entra aca
-      system("cls");//hay que cambiar esto
-      cout << "han ganado las ";//y hay que cambiar todos los cout de aca y talvez sea mejor unir este cout con el de sus respectivos ganadores
-      if(ganador == false){
-          cout << "blancas" << endl;
-      }
-      else{
-          cout << "negras" << endl;
-      }
-      system("pause");// y tambien esto...
-      system("cls");// y esto.
-      return False;
-      break;
-  }
-  return True;
-}
+
 int jaque(Pieza Tablero[8][8],int turno){ // esta funcion verifica si alguno de los reyes esta en jaque. si el rey blanco esta en jaque devuelve 1 y si el que esta en jaque es el rey negro
                                           // retorna 2, pero si ninguno esta en jaque la función devuelve 0
     int reyBlanco[2]; // la posicion del rey es un array de 2 para guardar X e Y
