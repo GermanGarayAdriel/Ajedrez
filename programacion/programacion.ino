@@ -305,7 +305,6 @@ bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifi
     }
     for(int x = 0;x < 8;x++){
         if(reyBlanco[1]+x < 8){
-            matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)
             if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
                 lugar[0] = reyBlanco[0]
                 lugar[1] = reyBlanco[1]+x
