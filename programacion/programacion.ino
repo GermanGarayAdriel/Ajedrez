@@ -305,28 +305,29 @@ bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifi
     }
     for(int x = 0;x < 8;x++){
         if(reyBlanco[1]+x < 8){
-            if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0],reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
+            matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)
+            if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
                 lugar[0] = reyBlanco[0]
                 lugar[1] = reyBlanco[1]+x
                 return true;
             }
         }
         if(reyBlanco[1]-x >= 0){
-            if((Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0],reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x)){
+            if((Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x)){
                 lugar[0] = reyBlanco[0]
                 lugar[1] = reyBlanco[1]-x
                 return true;
             }
         }
         if(reyBlanco[0]+x < 8){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1],0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1])){
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1])){
                 lugar[0] = reyBlanco[0]+x
                 lugar[1] = reyBlanco[1]
                 return true;
             }
         }
         if(reyBlanco[0]-x >= 0){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1],0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1])){
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1])){
                 lugar[0] = reyBlanco[0]-x
                 lugar[1] = reyBlanco[1]
                 return true;
@@ -334,28 +335,28 @@ bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifi
         }
         //alfil
         if(reyBlanco[1]+x < 8 && reyBlanco[0]+x < 8){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
                 lugar[0] = reyBlanco[0]+x
                 lugar[1] = reyBlanco[1]+x
                 return true;
             }
         }
         if(reyBlanco[1]-x >= 0 && reyBlanco[0]-x >= 0){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
                 lugar[0] = reyBlanco[0]-x
                 lugar[1] = reyBlanco[1]-x
                 return true;
             }
         }
         if(reyBlanco[0]+x < 8 && reyBlanco[1]-x >= 0){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]+x,reyBlanco[1]-x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
+            if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
                 lugar[0] = reyBlanco[0]+x
                 lugar[1] = reyBlanco[1]-x
                 return true;
             }
         }
         if(reyBlanco[0]-x >= 0 && reyBlanco[1]+x < 8){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && confirmarEnemigo(Tablero,reyBlanco[0]-x,reyBlanco[1]+x,0) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
+            if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
                 lugar[0] = reyBlanco[0]-x
                 lugar[1] = reyBlanco[1]+x
                 return true;
