@@ -28,6 +28,7 @@ void setup() {
   bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   bool seguir(Pieza tablero[8][8]);
   bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
+  bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   bool jaque(Pieza Tablero[8][8],int turno);
   bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
 
@@ -449,4 +450,30 @@ bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,in
     else{
         return true;
     }
+}
+bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){
+    int comprobantey, comprobantex;
+    comprobantey = cordenaday - movimientoy;
+    comprobantex = cordenadax - movimientox;
+    comprobantex = sqrt(pow(comprobantex,2));
+    comprobantey = sqrt(pow(comprobantey,2));
+    if(comprobantex = 2 && comprobantey == 0){
+        if(Tablero[cordenaday][cordenadax].movimiento == true){
+            if(movimientox > cordenadax){ // enroque largo
+                if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,7)){
+                    cambiar(Tablero,cordenaday,4,cordenaday,6);
+                    cambiar(Tablero,cordenaday,7,cordenaday,5);
+                    return true;
+                }
+            }
+            else if(movimientox < cordenadax){// enroque corto
+                if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,0)){
+                    cambiar(Tablero,cordenaday,4,cordenaday,2);
+                    cambiar(Tablero,cordenaday,0,cordenaday,3);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
