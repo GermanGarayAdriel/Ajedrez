@@ -29,6 +29,7 @@ void setup() {
   bool seguir(Pieza tablero[8][8]);
   bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
   bool jaque(Pieza Tablero[8][8],int turno);
+  bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
 
 }
 
@@ -141,6 +142,13 @@ void Inicializar_Tablero(Pieza Tablero[8][8])
                 Tablero[y][x].posicionOrigenX = x;
                 Tablero[y][x].posicionOrigenY = y;
             }
+            else{
+                Tablero[y][x].id_pieza = 100;
+                Tablero[y][x].color = false;
+                Tablero[y][x].movimiento = false;
+                Tablero[y][x].posicionOrigenX = x;
+                Tablero[y][x].posicionOrigenY = y;
+            }
         }
     }
 }
@@ -155,22 +163,22 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
     // a partir de aca todos los if's y elseif's corresponden a una pieza y su forma de moverse
     // para que esta clase funcione hay que tener: una clase intercepcion que vustre que en su trayecto la pieza no se tope con otra de su color y
     // la posicion de las piezas tienen que ser matrizes que tengan id's, color, posicion X e Y, movimiento(para saber si es la primera vez que se mueve),
-    if(((comprobantex + comprobantey) == 3 && (comprobantex != 3 || comprobantey != 3)) && (Tablero[cordenaday][cordenadax].id_pieza == caballo)){
+    if(((comprobantex + comprobantey) == 3 && (comprobantex != 3 || comprobantey != 3)) && (Tablero[cordenaday][cordenadax].id_pieza == caballo) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); //esta clase cambia la posicion de un objeto de lugar, habria que hacer otra similar * 
     }
-    else if(Tablero[cordenaday][cordenadax].id_pieza == alfil && (comprobantex==comprobantey)  && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(Tablero[cordenaday][cordenadax].id_pieza == alfil && (comprobantex==comprobantey)  && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((comprobantey==0 && comprobantex!=0)||(comprobantex==0 && comprobantey!=0))&& Tablero[cordenaday][cordenadax].id_pieza==torre && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(((comprobantey==0 && comprobantex!=0)||(comprobantex==0 && comprobantey!=0))&& Tablero[cordenaday][cordenadax].id_pieza==torre && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((comprobantex == 0 && comprobantey > 0) || (comprobantex > 0 && comprobantey == 0) || (comprobantex == comprobantey)) && (Tablero[cordenaday][cordenadax].id_pieza==reina) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(((comprobantex == 0 && comprobantey > 0) || (comprobantex > 0 && comprobantey == 0) || (comprobantex == comprobantey)) && (Tablero[cordenaday][cordenadax].id_pieza==reina) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if((comprobantex==1 || comprobantey ==1) && Tablero[cordenaday][cordenadax].id_pieza==rey && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+    else if((comprobantex==1 || comprobantey ==1) && Tablero[cordenaday][cordenadax].id_pieza==rey && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)) && (comprobantex == 0 && comprobantey == 1) || ((cordenaday == 6 || cordenaday == 1) && (comprobantex == 0 && comprobantey == 2)) && (Tablero[cordenaday][cordenadax].id_pieza==peon) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)) && (comprobantex == 0 && comprobantey == 1) || ((cordenaday == 6 || cordenaday == 1) && (comprobantex == 0 && comprobantey == 2)) && (Tablero[cordenaday][cordenadax].id_pieza==peon) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
     else{
@@ -430,4 +438,15 @@ bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int mov
         }
     }
     return true;
+}
+bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox){ // esta funcion verifica si el lugar a donde semueve la pieza esta desocupado o ocupado por una pieza enemiga
+    if(Tablero[movimientoy][movimientox].id_pieza != 100 && Tablero[movimientoy][movimientox].color != Tablero[cordenaday][cordenadax].color){
+        return true;
+    }
+    else if(Tablero[movimientoy][movimientox].id_pieza != 100 && Tablero[movimientoy][movimientox].color == Tablero[cordenaday][cordenadax].color){
+        return false;
+    }
+    else{
+        return true;
+    }
 }
