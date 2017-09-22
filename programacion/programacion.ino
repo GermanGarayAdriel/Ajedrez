@@ -14,47 +14,94 @@ struct Pieza{
     int posicionOrigenX;
     int posicionOrigenY;
 };
+Pieza tablero[8][8];
 
-Pieza tablero[8][8]
-
-void setup() {
-  
   // void
-  void arreglar(Pieza tablero[8][8],int turno);
+  void arreglar(Pieza Tablero[8][8],int turno);
   void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   void Inicializar_Tablero(Pieza Tablero[8][8]);
   // bool
   bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
-  bool seguir(Pieza tablero[8][8]);
+  bool seguir(Pieza Tablero[8][8]);
   bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
   bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   bool jaque(Pieza Tablero[8][8],int turno);
   bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
+  bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
 
+void setup() {
+  int incomingByte = 0;
 }
 
 void loop() {
-  Inicializar_Tablero(tablero[8][8]);
+  Inicializar_Tablero(tablero);
+  int cordenaday;
+  int cordenadax;
+  int movimientoy;
+  int movimientox;
+  int letra;
+  bool antiloop = true;
+  int incomingByte;
   while(true){
-    
-    //Lee mensaje
+    letra = 0;
+    while(antiloop){
+      if (Serial.available() > 0) {//Lee mensaje
+        incomingByte = Serial.read();
+          if(letra == 0){
+            cordenaday = incomingByte - 65;
+          }
+          else if(letra == 1){
+            cordenadax = incomingByte - 49;
+          }
+          else if(letra == 2){
+            movimientoy = incomingByte - 65;
+          }
+          else if(letra == 3){
+            movimientox = incomingByte - 49;
+            antiloop = false;
+          }
+          letra = letra+1;
+      }
+    }
     //Gana o pierde? (Iluminar)
     //Actualizar el movimiento enemigo (comió? cambió?)
+    cambiar(tablero,cordenaday,cordenadax,movimientoy,movimientox);
     //Busca jaque (Hay? Mostrar desde donde e iluminar el boton)
     //Imprimir menu (tiempo, ultimo movimiento y menu: enroque corto, largo, ofrecer tablas y rendirse)
       //Se rinde? 
     //CICLO    
       //Esperar movimiento del chaboncito (Mostrar posiciones posibles, ofrecer movimientos especiales)
+      letra = 0;
+      Serial.println("mensaje jugador");
+      while(antiloop){
+      if (Serial.available() > 0) {//Lee mensaje
+        incomingByte = Serial.read();
+          if(letra == 0){
+            cordenaday = incomingByte - 65;
+          }
+          else if(letra == 1){
+            cordenadax = incomingByte - 49;
+          }
+          else if(letra == 2){
+            movimientoy = incomingByte - 65;
+          }
+          else if(letra == 3){
+            movimientox = incomingByte - 49;
+            antiloop = false;
+          }
+          letra = letra+1;
+      }
+    }
       //Verificar movimiento (Si está mal poner el tablero en rojo. Si mueve varios titila en rojo el boton tambien. Verificar captura al paso)
+      Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1);
     //Coronacion?
     //Espera boton
     //Envia mensaje (Cambia de tablero)
-  }
+}
 }
 
-void Inicializar_Tablero(Pieza Tablero[8][8])
-{
+void Inicializar_Tablero(Pieza Tablero[8][8]){
     for(int y = 0;y < 8;  y++){
         for(int x = 0;x < 8;x++){
             //a partir de aca pone las fichas negras
@@ -164,22 +211,22 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
     // a partir de aca todos los if's y elseif's corresponden a una pieza y su forma de moverse
     // para que esta clase funcione hay que tener: una clase intercepcion que vustre que en su trayecto la pieza no se tope con otra de su color y
     // la posicion de las piezas tienen que ser matrizes que tengan id's, color, posicion X e Y, movimiento(para saber si es la primera vez que se mueve),
-    if(((comprobantex + comprobantey) == 3 && (comprobantex != 3 || comprobantey != 3)) && (Tablero[cordenaday][cordenadax].id_pieza == caballo) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
+    if(((comprobantex + comprobantey) == 3 && (comprobantex != 3 || comprobantey != 3)) && (Tablero[cordenaday][cordenadax].id_pieza == caballo) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); //esta clase cambia la posicion de un objeto de lugar, habria que hacer otra similar * 
     }
-    else if(Tablero[cordenaday][cordenadax].id_pieza == alfil && (comprobantex==comprobantey)  && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(Tablero[cordenaday][cordenadax].id_pieza == alfil && (comprobantex==comprobantey)  && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((comprobantey==0 && comprobantex!=0)||(comprobantex==0 && comprobantey!=0))&& Tablero[cordenaday][cordenadax].id_pieza==torre && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(((comprobantey==0 && comprobantex!=0)||(comprobantex==0 && comprobantey!=0))&& Tablero[cordenaday][cordenadax].id_pieza==torre && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((comprobantex == 0 && comprobantey > 0) || (comprobantex > 0 && comprobantey == 0) || (comprobantex == comprobantey)) && (Tablero[cordenaday][cordenadax].id_pieza==reina) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(((comprobantex == 0 && comprobantey > 0) || (comprobantex > 0 && comprobantey == 0) || (comprobantex == comprobantey)) && (Tablero[cordenaday][cordenadax].id_pieza==reina) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if((comprobantex==1 || comprobantey ==1) && Tablero[cordenaday][cordenadax].id_pieza==rey && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
+    else if((comprobantex==1 || comprobantey ==1) && Tablero[cordenaday][cordenadax].id_pieza==rey && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)) && (comprobantex == 0 && comprobantey == 1) || ((cordenaday == 6 || cordenaday == 1) && (comprobantex == 0 && comprobantey == 2)) && (Tablero[cordenaday][cordenadax].id_pieza==peon) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero[8][8],cordenaday,cordenadax,movimientoy,movimientox)){
+    else if(((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)) && (comprobantex == 0 && comprobantey == 1) || ((cordenaday == 6 || cordenaday == 1) && (comprobantex == 0 && comprobantey == 2)) && (Tablero[cordenaday][cordenadax].id_pieza==peon) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
     else{
@@ -307,58 +354,58 @@ bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifi
     for(int x = 0;x < 8;x++){
         if(reyBlanco[1]+x < 8){
             if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
-                lugar[0] = reyBlanco[0]
-                lugar[1] = reyBlanco[1]+x
+                lugar[0] = reyBlanco[0];
+                lugar[1] = reyBlanco[1]+x;
                 return true;
             }
         }
         if(reyBlanco[1]-x >= 0){
             if((Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x)){
-                lugar[0] = reyBlanco[0]
-                lugar[1] = reyBlanco[1]-x
+                lugar[0] = reyBlanco[0];
+                lugar[1] = reyBlanco[1]-x;
                 return true;
             }
         }
         if(reyBlanco[0]+x < 8){
             if((Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1])){
-                lugar[0] = reyBlanco[0]+x
-                lugar[1] = reyBlanco[1]
+                lugar[0] = reyBlanco[0]+x;
+                lugar[1] = reyBlanco[1];
                 return true;
             }
         }
         if(reyBlanco[0]-x >= 0){
             if((Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1])){
-                lugar[0] = reyBlanco[0]-x
-                lugar[1] = reyBlanco[1]
+                lugar[0] = reyBlanco[0]-x;
+                lugar[1] = reyBlanco[1];
                 return true;
             }
         }
         //alfil
         if(reyBlanco[1]+x < 8 && reyBlanco[0]+x < 8){
             if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
-                lugar[0] = reyBlanco[0]+x
-                lugar[1] = reyBlanco[1]+x
+                lugar[0] = reyBlanco[0]+x;
+                lugar[1] = reyBlanco[1]+x;
                 return true;
             }
         }
         if(reyBlanco[1]-x >= 0 && reyBlanco[0]-x >= 0){
             if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
-                lugar[0] = reyBlanco[0]-x
-                lugar[1] = reyBlanco[1]-x
+                lugar[0] = reyBlanco[0]-x;
+                lugar[1] = reyBlanco[1]-x;
                 return true;
             }
         }
         if(reyBlanco[0]+x < 8 && reyBlanco[1]-x >= 0){
             if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
-                lugar[0] = reyBlanco[0]+x
-                lugar[1] = reyBlanco[1]-x
+                lugar[0] = reyBlanco[0]+x;
+                lugar[1] = reyBlanco[1]-x;
                 return true;
             }
         }
         if(reyBlanco[0]-x >= 0 && reyBlanco[1]+x < 8){
             if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
-                lugar[0] = reyBlanco[0]-x
-                lugar[1] = reyBlanco[1]+x
+                lugar[0] = reyBlanco[0]-x;
+                lugar[1] = reyBlanco[1]+x;
                 return true;
             }
         }
@@ -403,9 +450,9 @@ bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int mov
         }
     }
     else if(comprobantex == 0){ // si se mueve de forma vertical utiliza este IF
-        leds[0] = cordenadax
+        leds[0] = cordenadax;
         for(int i = 1;i < comprobantey;i++){ // mueve la pieza de lugar en lugar hasta hallar a una pieza
-            leds[1] = cordenaday + i
+            leds[1] = cordenaday + i;
             if(cordenaday < movimientoy){ // va de arriba a abajo
                 //prenden el led de la cordenada leds[]
                 if(Tablero[cordenaday+i][cordenadax].id_pieza != 0){ // si encuentra un lugar en con una id valida significa que hay una pieza y devuelve false *2
@@ -421,9 +468,9 @@ bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int mov
         }
     }
     else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
-        leds[1] = cordenaday
+        leds[1] = cordenaday;
         for(int i = 1;i < comprobantex;i++){
-            leds[0] = cordenaday + i
+            leds[0] = cordenaday + i;
             if(cordenadax < movimientox){ // va de izquierda a derecha
                 //prenden el led de la cordenada leds[]
                 if(Tablero[cordenaday][cordenadax+i].id_pieza != 0){ // * same2
@@ -477,3 +524,4 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
     }
     return false;
 }
+
