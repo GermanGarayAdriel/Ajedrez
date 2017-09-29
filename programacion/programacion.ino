@@ -1,11 +1,11 @@
 // ACLARACION: la funcion cambiar podria estar implementada directamente en cada if pero como requiere mover todos los datos de una posicion a otra y eliminar los de la anterior fue mejor
 //             crear la funcion
-#define rey 1
-#define reina 2
-#define torre 3
-#define alfil 4
-#define caballo 5
-#define peon 6
+int rey = 1;
+int reina = 2;
+int torre = 3;
+int alfil = 4;
+int caballo = 5;
+int peon = 6;
 
 struct Pieza{
     bool color;
@@ -32,6 +32,7 @@ Pieza tablero[8][8];
 
 void setup() {
   int incomingByte = 0;
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -42,59 +43,88 @@ void loop() {
   int movimientox;
   int letra;
   bool antiloop = true;
+  bool antiloop2 = true;
   int incomingByte;
   while(true){
     letra = 0;
-    while(antiloop){
-      if (Serial.available() > 0) {//Lee mensaje
-        incomingByte = Serial.read();
-          if(letra == 0){
-            cordenaday = incomingByte - 65;
-          }
-          else if(letra == 1){
-            cordenadax = incomingByte - 49;
-          }
-          else if(letra == 2){
-            movimientoy = incomingByte - 65;
-          }
-          else if(letra == 3){
-            movimientox = incomingByte - 49;
-            antiloop = false;
-          }
-          letra = letra+1;
+    Serial.println("blancas");
+    while(antiloop2){
+      while(antiloop){
+        if (Serial.available() > 0) {//Lee mensaje
+          incomingByte = Serial.read();
+            if(letra == 0){
+              cordenaday = incomingByte - 65;
+            }
+            else if(letra == 1){
+              cordenadax = incomingByte - 49;
+            }
+            else if(letra == 2){
+              movimientoy = incomingByte - 65;
+            }
+            else if(letra == 3){
+              movimientox = incomingByte - 49;
+              antiloop = false;
+            }
+            letra = letra+1;
+        }
+      }
+      if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1)){
+        Serial.println("movimiento correcto");
+        antiloop2 = false;
+      }
+      else{
+        Serial.println("movimiento incorrecto");
+        letra = 0;
+        antiloop2 = true;
+        antiloop = true;
       }
     }
+    antiloop = true;
+    antiloop2 = true;
     //Gana o pierde? (Iluminar)
     //Actualizar el movimiento enemigo (comió? cambió?)
-    cambiar(tablero,cordenaday,cordenadax,movimientoy,movimientox);
     //Busca jaque (Hay? Mostrar desde donde e iluminar el boton)
     //Imprimir menu (tiempo, ultimo movimiento y menu: enroque corto, largo, ofrecer tablas y rendirse)
       //Se rinde? 
     //CICLO    
       //Esperar movimiento del chaboncito (Mostrar posiciones posibles, ofrecer movimientos especiales)
       letra = 0;
-      Serial.println("mensaje jugador");
-      while(antiloop){
-      if (Serial.available() > 0) {//Lee mensaje
-        incomingByte = Serial.read();
-          if(letra == 0){
-            cordenaday = incomingByte - 65;
-          }
-          else if(letra == 1){
-            cordenadax = incomingByte - 49;
-          }
-          else if(letra == 2){
-            movimientoy = incomingByte - 65;
-          }
-          else if(letra == 3){
-            movimientox = incomingByte - 49;
-            antiloop = false;
-          }
-          letra = letra+1;
+      Serial.println("negras");
+      while(antiloop2){
+        while(antiloop){
+        if (Serial.available() > 0) {//Lee mensaje
+          incomingByte = Serial.read();
+            if(letra == 0){
+              cordenaday = incomingByte - 65;
+            }
+            else if(letra == 1){
+              cordenadax = incomingByte - 49;
+            }
+            else if(letra == 2){
+              movimientoy = incomingByte - 65;
+            }
+            else if(letra == 3){
+              movimientox = incomingByte - 49;
+              antiloop = false;
+            }
+            letra = letra+1;
+        }
+      }
+      if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,0)){
+        Serial.println("movimiento correcto");
+        antiloop2 = false;
+      }
+      else{
+        Serial.println("movimiento incorrecto");
+        letra = 0;
+        antiloop2 = true;
+        antiloop = true;
       }
     }
+    antiloop = true;
+    antiloop2 = true;
       //Verificar movimiento (Si está mal poner el tablero en rojo. Si mueve varios titila en rojo el boton tambien. Verificar captura al paso)
-      Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1);
+      
     //Coronacion?
     //Espera boton
     //Envia mensaje (Cambia de tablero)
