@@ -28,7 +28,6 @@ Pieza tablero[8][8];
   bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   bool jaque(Pieza Tablero[8][8],int turno);
   bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
-  bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
 
 void setup() {
   int incomingByte = 0;
@@ -72,6 +71,10 @@ void loop() {
         Serial.println("movimiento correcto");
         antiloop2 = false;
       }
+      else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+        Serial.println("movimiento correcto");
+        antiloop2 = false;
+      }
       else{
         Serial.println("movimiento incorrecto");
         letra = 0;
@@ -111,6 +114,10 @@ void loop() {
         }
       }
       if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,0)){
+        Serial.println("movimiento correcto");
+        antiloop2 = false;
+      }
+      else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         Serial.println("movimiento correcto");
         antiloop2 = false;
       }
@@ -534,23 +541,25 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
     comprobantex = cordenadax - movimientox;
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
-    if(comprobantex = 2 && comprobantey == 0){
-        if(Tablero[cordenaday][cordenadax].movimiento == true){
-            if(movimientox > cordenadax){ // enroque largo
-                if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,7)){
-                    cambiar(Tablero,cordenaday,4,cordenaday,6);
-                    cambiar(Tablero,cordenaday,7,cordenaday,5);
-                    return true;
-                }
-            }
-            else if(movimientox < cordenadax){// enroque corto
-                if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,0)){
-                    cambiar(Tablero,cordenaday,4,cordenaday,2);
-                    cambiar(Tablero,cordenaday,0,cordenaday,3);
-                    return true;
-                }
-            }
-        }
+    if((cordenaday == 0 || cordenaday == 7) && (cordenadax == 0 || cordenadax == 7 || cordenadax == 4)){
+      if(comprobantex = 2 && comprobantey == 0){
+          if(Tablero[cordenaday][cordenadax].movimiento == true){
+              if(movimientox > cordenadax){ // enroque largo
+                  if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,7)){
+                      cambiar(Tablero,cordenaday,4,cordenaday,6);
+                      cambiar(Tablero,cordenaday,7,cordenaday,5);
+                      return true;
+                  }
+              }
+              else if(movimientox < cordenadax){// enroque corto
+                  if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,0)){
+                      cambiar(Tablero,cordenaday,4,cordenaday,2);
+                      cambiar(Tablero,cordenaday,0,cordenaday,3);
+                      return true;
+                  }
+              }
+          }
+      }
     }
     return false;
 }
