@@ -67,6 +67,9 @@ void loop() {
             letra = letra+1;
         }
       }
+      Serial.print("|");
+      Serial.print(tablero[cordenaday][cordenadax].id_pieza);
+      Serial.print("|");
       if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1)){
         Serial.println("movimiento correcto");
         antiloop2 = false;
@@ -113,6 +116,9 @@ void loop() {
             letra = letra+1;
         }
       }
+      Serial.print("|");
+      Serial.print(tablero[cordenaday][cordenadax].id_pieza);
+      Serial.print("|");
       if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,0)){
         Serial.println("movimiento correcto");
         antiloop2 = false;
@@ -245,6 +251,27 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
     comprobantex = cordenadax - movimientox;    //solo en el peon es necesario saber si el movimiento fue positivo o negativo
     comprobantex = sqrt(pow(comprobantex,2)); //pasa los numeros a positivo
     comprobantey = sqrt(pow(comprobantey,2)); //pasa los numeros a positivo
+    Serial.print("comprobantes");
+    Serial.print(comprobantey);
+    Serial.print(" ");
+    Serial.print(comprobantex);
+    Serial.print(" ");
+    Serial.print("|");
+    Serial.print(" ");
+    Serial.print(turno);
+    Serial.print(" ");
+    Serial.print("| ");
+    Serial.print("M: ");
+    Serial.print(movimientoy);
+    Serial.print(" ");
+    Serial.print(movimientox);
+    Serial.print(" ");
+    Serial.print("| ");
+    Serial.print("C: ");
+    Serial.print(cordenaday);
+    Serial.print(" ");
+    Serial.print(cordenadax);
+    Serial.print("|");
     // a partir de aca todos los if's y elseif's corresponden a una pieza y su forma de moverse
     // para que esta clase funcione hay que tener: una clase intercepcion que vustre que en su trayecto la pieza no se tope con otra de su color y
     // la posicion de las piezas tienen que ser matrizes que tengan id's, color, posicion X e Y, movimiento(para saber si es la primera vez que se mueve),
@@ -263,8 +290,29 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
     else if((comprobantex==1 || comprobantey ==1) && Tablero[cordenaday][cordenadax].id_pieza==rey && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
     }
-    else if(((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)) && (comprobantex == 0 && comprobantey == 1) || ((cordenaday == 6 || cordenaday == 1) && (comprobantex == 0 && comprobantey == 2)) && (Tablero[cordenaday][cordenadax].id_pieza==peon) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+    else if(tablero[cordenaday][cordenadax].id_pieza == 6 && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))){
+      if((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)){
+        if(comprobantex == 0){
+          if(comprobantey == 1 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+          }
+          else if(comprobantey == 2 && (cordenaday == 1 || cordenaday == 6) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+          }
+          else{
+              return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+          }
+        }
+        else if(comprobantex == 1 && comprobantey == 1){
+          cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+        }
+        else{
+            return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+        }
+      }
+      else{
+          return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+      }
     }
     else{
         return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
