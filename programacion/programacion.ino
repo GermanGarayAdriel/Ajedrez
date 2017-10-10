@@ -274,21 +274,55 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
     Serial.print("|");
     // a partir de aca todos los if's y elseif's corresponden a una pieza y su forma de moverse
     // para que esta clase funcione hay que tener: una clase intercepcion que vustre que en su trayecto la pieza no se tope con otra de su color y
-    // la posicion de las piezas tienen que ser matrizes que tengan id's, color, posicion X e Y, movimiento(para saber si es la primera vez que se mueve),
-    if(((comprobantex + comprobantey) == 3 && (comprobantex != 3 || comprobantey != 3)) && (Tablero[cordenaday][cordenadax].id_pieza == caballo) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); //esta clase cambia la posicion de un objeto de lugar, habria que hacer otra similar * 
+    // la posicion de las piezas tienen que ser matrizes que tengan id's, color, posicion X e Y, movimiento(para saber si es la primera vez que se mueve)
+    if(tablero[cordenaday][cordenadax].id_pieza == caballo && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))){
+        if((comprobantex + comprobantey) == 3 && (comprobantex != 3 || comprobantey != 3) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox);
+        }
+        else{
+            return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+        }
     }
-    else if(Tablero[cordenaday][cordenadax].id_pieza == alfil && (comprobantex==comprobantey)  && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+    else if(tablero[cordenaday][cordenadax].id_pieza == alfil && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))&& intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+        if(comprobantex == comprobantey && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+        }
+        else{
+            return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+        }
     }
-    else if(((comprobantey==0 && comprobantex!=0)||(comprobantex==0 && comprobantey!=0))&& Tablero[cordenaday][cordenadax].id_pieza==torre && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+    else if(tablero[cordenaday][cordenadax].id_pieza == torre && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0)) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+        if(comprobantex == 0 && comprobantey > 0 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+        }
+        else if(comprobantey == 0 && comprobantey > 0 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox);
+        }
+        else{
+            return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+        }
     }
-    else if(((comprobantex == 0 && comprobantey > 0) || (comprobantex > 0 && comprobantey == 0) || (comprobantex == comprobantey)) && (Tablero[cordenaday][cordenadax].id_pieza==reina) && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+    else if(tablero[cordenaday][cordenadax].id_pieza == reina && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))&& intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+        if(comprobantey == comprobantex && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+        }
+        else if(comprobantey == 0 && comprobantex > 0 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox);
+        }
+        else if(comprobantex == 0 && comprobantey > 0 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox);
+        }
+        else{
+            return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+        }
     }
-    else if((comprobantex==1 || comprobantey ==1) && Tablero[cordenaday][cordenadax].id_pieza==rey && intercepcion(Tablero,cordenaday,cordenadax,movimientoy,movimientox) && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+    else if(tablero[cordenaday][cordenadax].id_pieza == rey && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))){
+        if(comprobantex < 2 && comprobantey < 2 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
+        }
+        else{
+            return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
+        }
     }
     else if(tablero[cordenaday][cordenadax].id_pieza == 6 && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))){
       if((turno==1 && cordenaday < movimientoy) || (turno == 0 && cordenaday > movimientoy)){
@@ -329,22 +363,22 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
     if(comprobantex == comprobantey){ // si la pieza se mueve en diagonal utiliza este IF
         for(int i = 1;i < comprobantex;i++){
             if(cordenadax < movimientox && cordenaday < movimientoy){
-                if(Tablero[cordenaday+i][cordenadax+i].id_pieza != 0){
+                if((Tablero[cordenaday+i][cordenadax+i].id_pieza != 100 && Tablero[cordenaday+i][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){
                     return false;
                 }
             }
             else if(cordenadax > movimientox && cordenaday > movimientoy){
-                if(Tablero[cordenaday-i][cordenadax-i].id_pieza != 0){
+                if((Tablero[cordenaday-i][cordenadax-i].id_pieza != 100 && Tablero[cordenaday-i][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){
                     return false;
                 }
             }
             else if(cordenadax < movimientox && cordenaday > movimientoy){
-                if(Tablero[cordenaday-i][cordenadax+i].id_pieza != 0){
+                if((Tablero[cordenaday-i][cordenadax+i].id_pieza != 100 && Tablero[cordenaday-i][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){
                     return false;
                 }
             }
             else if(cordenadax > movimientox && cordenaday < movimientoy){
-                if(Tablero[cordenaday+i][cordenadax-i].id_pieza != 0){
+                if((Tablero[cordenaday+i][cordenadax-i].id_pieza != 100 && Tablero[cordenaday+i][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){
                     return false;
                 }
             }
@@ -353,12 +387,12 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
     else if(comprobantex == 0){ // si se mueve de forma vertical utiliza este IF
         for(int i = 1;i < comprobantey;i++){ // mueve la pieza de lugar en lugar hasta hallar a una pieza
             if(cordenaday < movimientoy){ // va de arriba a abajo
-                if(Tablero[cordenaday+i][cordenadax].id_pieza != 0){ // si encuentra un lugar en con una id valida significa que hay una pieza y devuelve false *2
+                if((Tablero[cordenaday+i][cordenadax].id_pieza != 100 && Tablero[cordenaday+i][cordenadax].color == Tablero[cordenaday][cordenadax].color)){ // si encuentra un lugar en con una id valida significa que hay una pieza y devuelve false *2
                     return false;
                 }
             }
             else if(cordenaday > movimientoy){ // va de abajo a arriba
-                if(Tablero[cordenaday-i][cordenadax].id_pieza != 0){ // * same2
+                if((Tablero[cordenaday-i][cordenadax].id_pieza != 100 && Tablero[cordenaday-i][cordenadax].color == Tablero[cordenaday][cordenadax].color)){ // * same2
                     return false;
                 }
             }
@@ -367,12 +401,12 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
     else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
         for(int i = 1;i < comprobantex;i++){
             if(cordenadax < movimientox){ // va de izquierda a derecha
-                if(Tablero[cordenaday][cordenadax+i].id_pieza != 0){ // * same2
+                if((Tablero[cordenaday][cordenadax+i].id_pieza != 100 && Tablero[cordenaday][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
                     return false;
                 }
             }
             else if(cordenadax > movimientox){ // va de derecha a izquierda
-                if(Tablero[cordenaday][cordenadax-i].id_pieza != 0){ // * same2
+                if((Tablero[cordenaday][cordenadax-i].id_pieza != 100 && Tablero[cordenaday][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
                     return false;
                 }
             }
@@ -405,22 +439,6 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy
     Tablero[cordenaday][cordenadax].movimiento = false;
     Tablero[cordenaday][cordenadax].posicionOrigenX = cordenadax;
     Tablero[cordenaday][cordenadax].posicionOrigenY = cordenaday;
-}
-void arreglar(Pieza tablero[8][8],int turno){ // este void pasa por las filas 4 y 6 para verificar que los peones que ya se movieron dos movimientos tengan la variable movimiento en true
-    if(turno == 0){                           // de esta forma no se permite comer al paso si la oportunidad de hacerlo no se ejecuto el turno anterior.
-        for(int i = 0;i < 8;i++){
-            if(tablero[3][i].id_pieza == peon && (!tablero[3][i].movimiento)){
-                tablero[3][i].movimiento = true;
-            }
-        }
-    }
-    if(turno == 1){
-        for(int i = 0;i < 8;i++){
-            if(tablero[4][i].id_pieza == peon && (!tablero[4][i].movimiento)){
-                tablero[4][i].movimiento = true;
-            }
-        }
-    }
 }
 
 bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifica si el rey está en jaque. También devuelve el lugar desde donde se está haciendo el jaque.
@@ -590,10 +608,12 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
     if((cordenaday == 0 || cordenaday == 7) && (cordenadax == 0 || cordenadax == 7 || cordenadax == 4)){
-      if(comprobantex = 2 && comprobantey == 0){
+      if((comprobantex == 2 || comprobantex == 3) && comprobantey == 0){
           if(Tablero[cordenaday][cordenadax].movimiento == true){
               if(movimientox > cordenadax){ // enroque largo
                   if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,7)){
+                      Tablero[cordenaday][cordenadax].movimiento = false
+                      Tablero[movimientoy][movimientox].movimiento = false
                       cambiar(Tablero,cordenaday,4,cordenaday,6);
                       cambiar(Tablero,cordenaday,7,cordenaday,5);
                       return true;
@@ -601,6 +621,8 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
               }
               else if(movimientox < cordenadax){// enroque corto
                   if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,0)){
+                      Tablero[cordenaday][cordenadax].movimiento = false
+                      Tablero[movimientoy][movimientox].movimiento = false
                       cambiar(Tablero,cordenaday,4,cordenaday,2);
                       cambiar(Tablero,cordenaday,0,cordenaday,3);
                       return true;
@@ -611,4 +633,3 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
     }
     return false;
 }
-
