@@ -442,78 +442,48 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy
 }
 
 bool jaque(Pieza Tablero[8][8],bool color, int lugar[2]){ // esta funcion verifica si el rey está en jaque. También devuelve el lugar desde donde se está haciendo el jaque.
-                                          
-    int reyBlanco[2]; // la posicion del rey es un array de 2 para guardar X e Y
-    for(int y = 0;y < 8;y++){
-        for(int x = 0;x < 8;x++){
-            if(Tablero[y][x].id_pieza == rey){
-                if(Tablero[y][x].color == color){
-                    reyBlanco[0] = y;
-                    reyBlanco[1] = x;
-                }
-            }
+    int reyPropio{2};
+    bool jaquemate = true;
+    for(int i = 0;i++;i < 8){ // busca a su rey
+      for(int x = 0;x++;x < 8){
+        if(Tablero[i][x].id_pieza == 1){
+          reyPropio[0] = i;
+          reyPropio[1] = x;
+          jaquemate = false;
         }
+      }
     }
-    for(int x = 0;x < 8;x++){
-        if(reyBlanco[1]+x < 8){
-            if((Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]+x)){
-                lugar[0] = reyBlanco[0];
-                lugar[1] = reyBlanco[1]+x;
-                return true;
-            }
-        }
-        if(reyBlanco[1]-x >= 0){
-            if((Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == torre || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0],reyBlanco[1]-x)){
-                lugar[0] = reyBlanco[0];
-                lugar[1] = reyBlanco[1]-x;
-                return true;
-            }
-        }
-        if(reyBlanco[0]+x < 8){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]+x][reyBlanco[1]].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1])){
-                lugar[0] = reyBlanco[0]+x;
-                lugar[1] = reyBlanco[1];
-                return true;
-            }
-        }
-        if(reyBlanco[0]-x >= 0){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == torre || Tablero[reyBlanco[0]-x][reyBlanco[1]].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1])){
-                lugar[0] = reyBlanco[0]-x;
-                lugar[1] = reyBlanco[1];
-                return true;
-            }
-        }
-        //alfil
-        if(reyBlanco[1]+x < 8 && reyBlanco[0]+x < 8){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]+x)){
-                lugar[0] = reyBlanco[0]+x;
-                lugar[1] = reyBlanco[1]+x;
-                return true;
-            }
-        }
-        if(reyBlanco[1]-x >= 0 && reyBlanco[0]-x >= 0){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]-x)){
-                lugar[0] = reyBlanco[0]-x;
-                lugar[1] = reyBlanco[1]-x;
-                return true;
-            }
-        }
-        if(reyBlanco[0]+x < 8 && reyBlanco[1]-x >= 0){
-            if((Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == alfil || Tablero[reyBlanco[0]+x][reyBlanco[1]-x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]+x,reyBlanco[1]-x)){
-                lugar[0] = reyBlanco[0]+x;
-                lugar[1] = reyBlanco[1]-x;
-                return true;
-            }
-        }
-        if(reyBlanco[0]-x >= 0 && reyBlanco[1]+x < 8){
-            if((Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == alfil || Tablero[reyBlanco[0]-x][reyBlanco[1]+x].id_pieza == reina) && matar(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x) && intercepcion(Tablero,reyBlanco[0],reyBlanco[1],reyBlanco[0]-x,reyBlanco[1]+x)){
-                lugar[0] = reyBlanco[0]-x;
-                lugar[1] = reyBlanco[1]+x;
-                return true;
-            }
-        }
+    if(jaquemate){
+      return false
     }
-    return false;
+    else{
+      for(int i = 0;i++;i < 8){
+        if((reyPropio[0] + i) < 8){
+           
+        }
+        if((reyPropio[1] + i) < 8){
+           
+        }
+        if((reyPropio[0] - i) >= 0){
+           
+        }
+        if((reyPropio[1] - i) >= 0){
+           
+        }
+        if((reyPropio[0] + i) < 8 && (reyPropio[1] + i) < 8){
+          
+        }
+        if((reyPropio[0] - i) >= 0 && (reyPropio[1] - i) >= 0){
+          
+        }
+        if((reyPropio[0] - i) >= 0 && (reyPropio[1] + i) < 8){
+          
+        }
+        if((reyPropio[0] + i) < 8 && (reyPropio[1] - i) >= 0){
+          
+        }
+      }
+    }
 }
 bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox){ //Enciende los LEDs que conforman el camino del jaque
     int comprobantey, comprobantex;
@@ -612,8 +582,8 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
           if(Tablero[cordenaday][cordenadax].movimiento == true){
               if(movimientox > cordenadax){ // enroque largo
                   if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,7)){
-                      Tablero[cordenaday][cordenadax].movimiento = false
-                      Tablero[movimientoy][movimientox].movimiento = false
+                      Tablero[cordenaday][cordenadax].movimiento = false;
+                      Tablero[movimientoy][movimientox].movimiento = false;
                       cambiar(Tablero,cordenaday,4,cordenaday,6);
                       cambiar(Tablero,cordenaday,7,cordenaday,5);
                       return true;
@@ -621,8 +591,8 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
               }
               else if(movimientox < cordenadax){// enroque corto
                   if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,0)){
-                      Tablero[cordenaday][cordenadax].movimiento = false
-                      Tablero[movimientoy][movimientox].movimiento = false
+                      Tablero[cordenaday][cordenadax].movimiento = false;
+                      Tablero[movimientoy][movimientox].movimiento = false;
                       cambiar(Tablero,cordenaday,4,cordenaday,2);
                       cambiar(Tablero,cordenaday,0,cordenaday,3);
                       return true;
