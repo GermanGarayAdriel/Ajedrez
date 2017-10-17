@@ -157,6 +157,7 @@ void loop() {
     //Espera boton
     //Envia mensaje (Cambia de tablero)
 }
+delay(1000000000);
 }
 
 void Inicializar_Tablero(Pieza Tablero[8][8]){
@@ -332,10 +333,12 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
         }
     }
     else if(tablero[cordenaday][cordenadax].id_pieza == rey && ((tablero[cordenaday][cordenadax].color == true && turno == 1) || (tablero[cordenaday][cordenadax].color == false && turno == 0))){
+      
         if(comprobantex < 2 && comprobantey < 2 && matar(Tablero,cordenaday,cordenadax,movimientoy,movimientox)){
             cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
         }
         else{
+          Serial.println ("segundo");
             return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
         }
     }
@@ -449,7 +452,7 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy
         Tablero[movimientoy][movimientox].movimiento = false;
     }
     //borra la posicion en la que estaba anteriormente
-    Tablero[cordenaday][cordenadax].id_pieza = 0;
+    Tablero[cordenaday][cordenadax].id_pieza = 100;
     Tablero[cordenaday][cordenadax].color = false;
     Tablero[cordenaday][cordenadax].movimiento = false;
     Tablero[cordenaday][cordenadax].posicionOrigenX = cordenadax;
@@ -458,13 +461,18 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy
 
 bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey está en jaque. También devuelve el lugar desde donde se está haciendo el jaque.
     int reyPropio[2];
-    for(int i = 0;i++;i < 8){ // busca a su rey
-      for(int x = 0;x++;x < 8){
+    int i = 0;
+    int x = 0;
+    while(i < 8){
+      while(x < 8){
         if(Tablero[i][x].id_pieza == 1 && Tablero[i][x].color == color){
           reyPropio[0] = i;
           reyPropio[1] = x;
         }
+        x = x + 1;
       }
+      x = 0;
+      i = i + 1;
     }
     for(int i = 0;i++;i < 8){
       if((reyPropio[0] + i) < 8){
@@ -516,6 +524,7 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
         }
       }
       if((reyPropio[0] - i) >= 0 && (reyPropio[1] + i) < 8){
+        Serial.println("segundo adentro");
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1] + i) && Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza != 100){
           if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 4){
             return true;
@@ -539,15 +548,20 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
 }
 bool jaquemate(Pieza Tablero[8][8],bool color){
   int reyPropio[2];
-    bool hayRey = false;
-    for(int i = 0;i++;i < 8){ // busca a su rey
-      for(int x = 0;x++;x < 8){
+    bool hayRey = true;
+    int i = 0;
+    int x = 0;
+    while(i < 8){
+      while(x < 8){
         if(Tablero[i][x].id_pieza == 1 && Tablero[i][x].color == color){
           reyPropio[0] = i;
           reyPropio[1] = x;
-          hayRey = true;
+          hayRey = false;
         }
+        x = x + 1;
       }
+      x = 0;
+      i = i + 1;
     }
     return hayRey;
 }
