@@ -48,7 +48,7 @@ void loop() {
   while(true){
     letra = 0;
     if(jaquemate(tablero,true)){
-      Serial.println("rey blanco no existe fin del juego ganan negras");
+      Serial.println("rey blanco no existe, fin del juego. Ganan negras");
       break;
     }
     if(jaque(tablero,true)){
@@ -104,7 +104,7 @@ void loop() {
       //Esperar movimiento del chaboncito (Mostrar posiciones posibles, ofrecer movimientos especiales)
       letra = 0;
       if(jaquemate(tablero,false)){
-        Serial.println("rey negro no existe fin del juego ganan blancas");
+        Serial.println("rey negro no existe, fin del juego. Ganan blancas");
         break;
       }
       if(jaque(tablero,false)){
@@ -474,77 +474,115 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
       x = 0;
       i = i + 1;
     }
-    for(int i = 0;i++;i < 8){
+    i = 0;
+    while(i < 8){
       if((reyPropio[0] + i) < 8){
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1]) && Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza != 100){
           if(Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza == 2 || Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza == 3){
+            if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            Serial.println("adentro: 1");
+            Serial.println(i);
             return true;
+            }
           }
          }
       }
       if((reyPropio[1] + i) < 8){
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0],reyPropio[1] + i) && Tablero[reyPropio[0]][reyPropio[1] + i].id_pieza != 100){
           if(Tablero[reyPropio[0]][reyPropio[1] + i].id_pieza == 2 || Tablero[reyPropio[0]][reyPropio[1] + i].id_pieza == 3){
+            if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            Serial.println("adentro: 2");
+            Serial.println(i);
             return true;
+            }
           }
          }
       }
       if((reyPropio[0] - i) >= 0){
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1]) && Tablero[reyPropio[0] - i][reyPropio[1]].id_pieza != 100){
           if(Tablero[reyPropio[0] - i][reyPropio[1]].id_pieza == 2 || Tablero[reyPropio[0] - i][reyPropio[1]].id_pieza == 3){
+            if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            Serial.println("adentro: 3");
+            Serial.println(i);
             return true;
+            }
           }
          }
       }
       if((reyPropio[1] - i) >= 0){
-         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0],reyPropio[1] - i) && Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza != 100){
+         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0],reyPropio[1] - i) && Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza != 100 && (reyPropio[1] - i) >= 0){
           if(Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza == 2 || Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza == 3){
-            return true;
+            if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+              Serial.print("adentro: 4 i: ");
+              Serial.print(i);
+              Serial.print(" reyPropio: ");
+              Serial.println(reyPropio[1] - i);
+              return true;
+            }
           }
          }
       }
       if((reyPropio[0] + i) < 8 && (reyPropio[1] + i) < 8){
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] + 1) && Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza != 100){
-          if(Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza == 4){
-            return true;
-          }
-          if(Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza == 6 && i == 1){
-            return true;
+          if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            if(Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza == 4){
+              Serial.println("adentro: 5");
+              return true;
+            }
+            if(Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza == 6 && i == 1){
+              Serial.println("adentro: 6");
+              return true;
+            }
           }
         }
       }
       if((reyPropio[0] - i) >= 0 && (reyPropio[1] - i) >= 0){
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1] - i) && Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza != 100){
-          if(Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza == 4){
-            return true;
-          }
-          if(Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza == 6 && i == 1){
-            return true;
+          if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            if(Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza == 4){
+              Serial.println("adentro: 7");
+              return true;
+            }
+            if(Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza == 6 && i == 1){
+              Serial.println("adentro: 8");
+              return true;
+            }
           }
         }
       }
       if((reyPropio[0] - i) >= 0 && (reyPropio[1] + i) < 8){
-        Serial.println("segundo adentro");
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1] + i) && Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza != 100){
-          if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 4){
-            return true;
-          }
-          if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 6 && i == 1){
-            return true;
+        Serial.println("primero adentro");
+          if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            Serial.println("segundo adentro: ");
+            if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 4){
+              Serial.println("adentro: 9");
+              return true;
+            }
+            if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 6 && i == 1){
+              Serial.println("adentro: 10");
+              return true;
+            }
           }
         }
       }
       if((reyPropio[0] + i) < 8 && (reyPropio[1] - i) >= 0){
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] - i) && Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza != 100){
-          if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 4){
-            return true;
-          }
-          if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 6 && i == 1){
-            return true;
+          if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+            if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 4){
+              Serial.println("adentro: 11");
+              return true;
+            }
+            if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 6 && i == 1){
+              Serial.println("adentro: 12");
+              return true;
+            }
           }
         }
       }
+      i = i + 1;
     }
+    return false;
 }
 bool jaquemate(Pieza Tablero[8][8],bool color){
   int reyPropio[2];
