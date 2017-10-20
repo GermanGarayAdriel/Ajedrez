@@ -378,32 +378,51 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
     comprobantex = cordenadax - movimientox;
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
+    Serial.println(" ZERO ");
+    Serial.print("cy: ");
+    Serial.print(cordenaday);
+    Serial.print(" | cx: ");
+    Serial.print(cordenadax);
+    Serial.print(" | my: ");
+    Serial.print(movimientoy);
+    Serial.print(" | mx: ");
+    Serial.println(movimientox);
     if(comprobantex == comprobantey){ // si la pieza se mueve en diagonal utiliza este IF
-        for(int i = 1;i < comprobantex;i++){
+      Serial.println(" 1ro ");
+        for(int i = 1;i <= comprobantex;i++){
+          Serial.println(" 2do ");
             if(cordenadax < movimientox && cordenaday < movimientoy){
+              Serial.println(" 3ro ++");
                 if((Tablero[cordenaday+i][cordenadax+i].id_pieza != 100 && Tablero[cordenaday+i][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){
+                  Serial.println(" 4to ");
                     return false;
                 }
             }
             else if(cordenadax > movimientox && cordenaday > movimientoy){
+              Serial.println(" 3ro ++++");
                 if((Tablero[cordenaday-i][cordenadax-i].id_pieza != 100 && Tablero[cordenaday-i][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){
+                  Serial.println(" 4to ");
                     return false;
                 }
             }
             else if(cordenadax < movimientox && cordenaday > movimientoy){
+              Serial.println(" 3ro ..");
                 if((Tablero[cordenaday-i][cordenadax+i].id_pieza != 100 && Tablero[cordenaday-i][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){
+                  Serial.println(" 4to ");
                     return false;
                 }
             }
             else if(cordenadax > movimientox && cordenaday < movimientoy){
+              Serial.println(" 3ro ....");
                 if((Tablero[cordenaday+i][cordenadax-i].id_pieza != 100 && Tablero[cordenaday+i][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){
+                  Serial.println(" 4to ");
                     return false;
                 }
             }
         }
     }
     else if(comprobantex == 0){ // si se mueve de forma vertical utiliza este IF
-        for(int i = 1;i < comprobantey;i++){ // mueve la pieza de lugar en lugar hasta hallar a una pieza
+        for(int i = 1;i <= comprobantey;i++){ // mueve la pieza de lugar en lugar hasta hallar a una pieza
             if(cordenaday < movimientoy){ // va de arriba a abajo
                 if((Tablero[cordenaday+i][cordenadax].id_pieza != 100 && Tablero[cordenaday+i][cordenadax].color == Tablero[cordenaday][cordenadax].color)){ // si encuentra un lugar en con una id valida significa que hay una pieza y devuelve false *2
                     return false;
@@ -417,7 +436,7 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
         }
     }
     else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
-        for(int i = 1;i < comprobantex;i++){
+        for(int i = 1;i <= comprobantex;i++){
             if(cordenadax < movimientox){ // va de izquierda a derecha
                 if((Tablero[cordenaday][cordenadax+i].id_pieza != 100 && Tablero[cordenaday][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
                     return false;
@@ -430,6 +449,7 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
             }
         }
     }
+    Serial.println("fin");
     return true;
 }
 void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){ //Cambia la pieza de un lugar a otro
@@ -468,14 +488,73 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
         if(Tablero[i][x].id_pieza == 1 && Tablero[i][x].color == color){
           reyPropio[0] = i;
           reyPropio[1] = x;
+          Serial.print(Tablero[i][x].id_pieza);
+          Serial.print(" | ");
+          Serial.println(Tablero[i][x].color);
         }
         x = x + 1;
       }
       x = 0;
       i = i + 1;
     }
-    i = 0;
+    i = 1;
     while(i < 8){
+      if(Tablero[reyPropio[0] + 2][reyPropio[1] + 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 1ro");
+        Serial.println(Tablero[reyPropio[0] + 2][reyPropio[1] + 1].id_pieza);
+        if(Tablero[reyPropio[0] + 2][reyPropio[1] + 1].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] + 2][reyPropio[1] - 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 2do");
+        Serial.println(Tablero[reyPropio[0] + 2][reyPropio[1] - 1].id_pieza);
+        if(Tablero[reyPropio[0] + 2][reyPropio[1] - 1].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] - 2][reyPropio[1] + 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 3ro");
+        Serial.println(Tablero[reyPropio[0] - 2][reyPropio[1] + 1].id_pieza);
+        if(Tablero[reyPropio[0] - 2][reyPropio[1] + 1].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] - 2][reyPropio[1] - 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 4to");
+        Serial.println(Tablero[reyPropio[0] - 2][reyPropio[1] - 1].id_pieza);
+        if(Tablero[reyPropio[0] - 2][reyPropio[1] - 1].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] + 1][reyPropio[1] + 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 5to");
+        Serial.println(Tablero[reyPropio[0] + 1][reyPropio[1] + 2].id_pieza);
+        if(Tablero[reyPropio[0] + 1][reyPropio[1] + 2].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] - 1][reyPropio[1] + 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 6to");
+        Serial.println(Tablero[reyPropio[0] - 1][reyPropio[1] + 2].id_pieza);
+        if(Tablero[reyPropio[0] - 1][reyPropio[1] + 2].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] + 1][reyPropio[1] - 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 7mo");
+        Serial.println(Tablero[reyPropio[0] + 1][reyPropio[1] - 2].id_pieza);
+        if(Tablero[reyPropio[0] + 1][reyPropio[1] - 2].id_pieza == 5){
+          return true;
+        }
+      }
+      if(Tablero[reyPropio[0] - 1][reyPropio[1] - 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.println("f 8vo");
+        Serial.println(Tablero[reyPropio[0] - 1][reyPropio[1] - 2].id_pieza);
+        if(Tablero[reyPropio[0] - 1][reyPropio[1] - 2].id_pieza == 5){
+          return true;
+        }
+      }
       if((reyPropio[0] + i) < 8){
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1]) && Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza != 100){
           if(Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza == 2 || Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza == 3){
@@ -552,11 +631,25 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
       }
       if((reyPropio[0] - i) >= 0 && (reyPropio[1] + i) < 8){
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1] + i) && Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza != 100){
-        Serial.println("primero adentro");
-          if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
+        Serial.print("primero adentro: ");
+        Serial.print(i);
+        Serial.print(" | ");
+        Serial.print(reyPropio[0] - i);
+        Serial.print(" | ");
+        Serial.print(reyPropio[1] + i);
+        Serial.print(" | ");
+        Serial.print(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza);
+        Serial.print(" | ");
+        Serial.println(Tablero[reyPropio[0] - i][reyPropio[1] + i].color);
+        
+          if(Tablero[reyPropio[0] - i][reyPropio[1] + i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
             Serial.println("segundo adentro: ");
             if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 4){
               Serial.println("adentro: 9");
+              return true;
+            }
+            if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 2){
+              Serial.println("adentro: 9,5"); 
               return true;
             }
             if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 6 && i == 1){
@@ -567,16 +660,14 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
         }
       }
       if((reyPropio[0] + i) < 8 && (reyPropio[1] - i) >= 0){
-        if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] - i) && Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza != 100){
-          if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-            if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 4){
-              Serial.println("adentro: 11");
-              return true;
-            }
-            if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 6 && i == 1){
-              Serial.println("adentro: 12");
-              return true;
-            }
+        if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] - i) && Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza != 100 && matar(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] - i)){
+          if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 4){
+            Serial.println("adentro: 11");
+            return true;
+          }
+          if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 6 && i == 1){
+            Serial.println("adentro: 12");
+            return true;
           }
         }
       }
