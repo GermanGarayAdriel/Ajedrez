@@ -56,13 +56,22 @@ void leer_registros()
 }
 
 // comparo el estado actual del tablero respecto al anterior para verificar si hubo algun cambio
-int cambio_detectado()
+int cambio_detectado(int posicion[2], int nueva_posicion[2])
 {
 	int fila, columna;
 	for(fila = 0; fila < 8; fila++)
 	{
 		for(columna = 0; columna < 8; columna++)
-			if (tablero[fila][columna] != tableroAnterior[fila][columna]) return 1;
+			if (tablero[fila][columna] != tableroAnterior[fila][columna] && tablero[fila][columna] == 1){
+			  posicion[0] = fila;
+        posicion[1] = columna;
+        return;
+			}
+      else if (tablero[fila][columna] != tableroAnterior[fila][columna] && (tablero[fila][columna] == 0)){
+        nueva_posicion[0] = fila;
+        nueva_posicion[1] = columna;
+        return;
+      }
 	}
 	return 0;
 }
@@ -91,7 +100,9 @@ void apagar_led(int led)
 	FastLED.show();
 }
 
-// Muestro el estado del tablero
+
+
+//Muestro el estado del tablero
 void mostrar_estado_tablero()
 {
     int fila, columna, led = 0;
@@ -100,17 +111,15 @@ void mostrar_estado_tablero()
     {
 	    for(columna = 0; columna < 8; columna++)
 	    {
-	    	if(tablero[fila][columna] == 0){
+	    	if(tablero[fila][columna] == 0 && (fila != 5 && columna != 5)){
 	    		encender_led(63 - led);
-          Serial.println(fila);
-          Serial.println(columna);
 	    	}
 	    	else
 	    		apagar_led(63 - led);
 
             led++;
 	    }
-	}
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -137,16 +146,22 @@ void setup()
 
 void loop() 
 {
-    // Read the state of all zones
     leer_registros();
-     // If there was a chage in state, display which ones changed
     
-    //encender_led(8);
-    if(cambio_detectado)
-    {
-        mostrar_estado_tablero();
-        guardar_estado_tablero();
+    int posicion[2];
+    int nueva_posicion[2];
+    cambio_detectado(posicion, nueva_posicion);
+    mostrar_estado_tablero();
+    guardar_estado_tablero();
+    if (posicion[0] != 5 && posicion[1] != 5){
+      Serial.print(posicion[0]);
+      Serial.print("  -  ");
+      Serial.print(posicion[1]);
+      Serial.print("---------");
+      Serial.print(nueva_posicion[0]);
+      Serial.print("  -  ");
+      Serial.println(nueva_posicion[1]);
+      delay(1000);
     }
-
     delay(POLL_DELAY_MSEC);
 }
