@@ -1,6 +1,6 @@
 #include <FastLED.h> //Incluyo libreria (Hay que instalarla)
 #define NUM_LEDS 40 //Cantidad de LEDS
-#define DATA_PIN 6 //El pin
+#define DATA_PIN 11 //El pin
 
 CRGB leds[NUM_LEDS]; //Arreglo con los leds
 

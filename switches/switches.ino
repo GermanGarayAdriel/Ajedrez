@@ -61,7 +61,7 @@ int cambio_detectado(int posicion[2], int nueva_posicion[2])
 	int fila, columna;
 	for(fila = 0; fila < 8; fila++)
 	{
-		for(columna = 0; columna < 8; columna++)
+		for(columna = 0; columna < 8; columna++){
 			if (tablero[fila][columna] != tableroAnterior[fila][columna] && tablero[fila][columna] == 1){
 			  posicion[0] = fila;
         posicion[1] = columna;
@@ -75,6 +75,7 @@ int cambio_detectado(int posicion[2], int nueva_posicion[2])
 	}
 	return 0;
 }
+}
 
 // Guardo el estado actual del tablero para ver si hubo algun cambio
 void guardar_estado_tablero()
@@ -83,8 +84,9 @@ void guardar_estado_tablero()
 	
 	for(fila = 0; fila < 8; fila++)
 	{
-		for(columna = 0; columna < 8; columna++)
+		for(columna = 0; columna < 8; columna++){
 			tableroAnterior[fila][columna] = tablero[fila][columna];
+		}
 	}
 }
 
@@ -153,15 +155,13 @@ void loop()
     cambio_detectado(posicion, nueva_posicion);
     mostrar_estado_tablero();
     guardar_estado_tablero();
-    if (posicion[0] != 5 && posicion[1] != 5){
-      Serial.print(posicion[0]);
-      Serial.print("  -  ");
-      Serial.print(posicion[1]);
-      Serial.print("---------");
-      Serial.print(nueva_posicion[0]);
-      Serial.print("  -  ");
-      Serial.println(nueva_posicion[1]);
-      delay(1000);
-    }
+    Serial.print(posicion[0]);
+    Serial.print("  -  ");
+    Serial.print(posicion[1]);
+    Serial.print("---------");
+    Serial.print(nueva_posicion[0]);
+    Serial.print("  -  ");
+    Serial.println(nueva_posicion[1]);
+    delay(1000);
     delay(POLL_DELAY_MSEC);
 }

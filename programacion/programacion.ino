@@ -6,7 +6,6 @@ int torre = 3;
 int alfil = 4;
 int caballo = 5;
 int peon = 6;
-#include "FastLED.h"
 
 // fast led constants
 #define DATA_PIN    11        // change to your data pin
@@ -30,7 +29,6 @@ int peon = 6;
 // 0 Significa que está siendo tocadillo
 
 // this creates a LED array to hold the values for each led in your strip
-CRGB leds[NUM_LEDS];
 
 byte tablero_buscar[8][8];
 byte tableroAnterior[8][8];
@@ -60,7 +58,6 @@ Pieza tablero[8][8];
 void setup() {
   int incomingByte = 0;
   Serial.begin(9600);
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     pinMode(LOAD, OUTPUT);
     pinMode(ENABLE, OUTPUT);
     pinMode(CLOCK, OUTPUT);
@@ -69,9 +66,6 @@ void setup() {
     digitalWrite(LOAD, HIGH);
 
     // Read in and display the pin states at startup.
-    leer_registros();
-    mostrar_estado_tablero();
-    guardar_estado_tablero();
 }
 void leer_registros()
 {
@@ -84,19 +78,19 @@ void leer_registros()
     digitalWrite(ENABLE, LOW);
 
     // Lectura bit a bit de los registros de los SN74HC165N
-    for(fila = 0; fila < 8; fila++)
+  for(fila = 0; fila < 8; fila++)
+  {
+    // Lectura desde la derecha debido al cableado de los SN74HC165N
+    for(columna = 7; columna >= 0; columna--)
     {
-      // Lectura desde la derecha debido al cableado de los SN74HC165N
-      for(columna = 7; columna >= 0; columna--)
-      {
-          // Set the corresponding bit in tablero
-          tablero_buscar[fila][columna] = digitalRead(DATA);
+        // Set the corresponding bit in tablero
+        tablero_buscar[fila][columna] = digitalRead(DATA);
 
-          // Pulso de Clock (flanco ascendente, desplaza el bit leido)
-          digitalWrite(CLOCK, HIGH);
-          delayMicroseconds(PULSE_WIDTH_USEC);
-          digitalWrite(CLOCK, LOW);
-      }
+        // Pulso de Clock (flanco ascendente, desplaza el bit leido)
+        digitalWrite(CLOCK, HIGH);
+        delayMicroseconds(PULSE_WIDTH_USEC);
+        digitalWrite(CLOCK, LOW);
+    }
   }
 }
 
@@ -106,7 +100,7 @@ int cambio_detectado(int posicion[2], int nueva_posicion[2])
   int fila, columna;
   for(fila = 0; fila < 8; fila++)
   {
-    for(columna = 0; columna < 8; columna++)
+    for(columna = 0; columna < 8; columna++){
       if (tablero_buscar[fila][columna] != tableroAnterior[fila][columna] && tablero_buscar[fila][columna] == 1){
         posicion[0] = fila;
         posicion[1] = columna;
@@ -117,55 +111,18 @@ int cambio_detectado(int posicion[2], int nueva_posicion[2])
         nueva_posicion[1] = columna;
         return;
       }
+    }
   }
   return 0;
 }
 
 // Guardo el estado actual del tablero para ver si hubo algun cambio
-void guardar_estado_tablero()
-{
-  int fila, columna;
-  
-  for(fila = 0; fila < 8; fila++)
-  {
-    for(columna = 0; columna < 8; columna++)
-      tableroAnterior[fila][columna] = tablero_buscar[fila][columna];
-  }
-}
 
-void encender_led(int led)
-{
-    leds[led] = CRGB::Blue;
-    FastLED.show();
-}
-
-void apagar_led(int led)
-{
-  leds[led] = leds[led] = CRGB::Black;
-  FastLED.show();
-}
 
 
 
 //Muestro el estado del tablero
-void mostrar_estado_tablero()
-{
-    int fila, columna, led = 0;
 
-    for(fila = 0; fila < 8; fila++)
-    {
-      for(columna = 0; columna < 8; columna++)
-      {
-        if(tablero_buscar[fila][columna] == 0){
-          encender_led(63 - led);
-        }
-        else
-          apagar_led(63 - led);
-
-            led++;
-      }
-    }
-}
 
 void loop() {
   Inicializar_Tablero(tablero);
@@ -179,12 +136,9 @@ void loop() {
   int incomingByte;
   while(true){
     leer_registros();
-    
     int posicion[2];
     int nueva_posicion[2];
-    cambio_detectado(posicion, nueva_posicion);
-    mostrar_estado_tablero();
-    guardar_estado_tablero();
+    
     if (posicion[0] != nueva_posicion[0] && posicion[1] != nueva_posicion[1]){
        cordenadax = posicion[0];
        cordenaday = 7 - posicion[1];
@@ -194,6 +148,7 @@ void loop() {
     letra = 0;
     if(jaquemate(tablero,true)){
       Serial.println("rey blanco no existe, fin del juego. Ganan negras");
+      delay(100000000);
       break;
     }
     if(jaque(tablero,true)){
@@ -206,19 +161,17 @@ void loop() {
       Serial.print("|");
       if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1)){
         Serial.println("movimiento correcto");
-        antiloop2 = false;
+        break;
       }
       else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         Serial.println("movimiento correcto");
-        antiloop2 = false;
+        break;
       }
       else{
         Serial.println("movimiento incorrecto");
         letra = 0;
-        antiloop2 = true;
-        antiloop = true;
       }
-    }
+  }
     antiloop = true;
     antiloop2 = true;
     //Gana o pierde? (Iluminar)
