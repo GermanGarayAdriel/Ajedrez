@@ -56,8 +56,9 @@ Pieza tablero[8][8];
   bool jaque(Pieza Tablero[8][8],int turno);
   bool jaquemate(Pieza Tablero[8][8],bool color);
   bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
-
+int guardar_posicion[2];
 void setup() {
+  guardar_posicion[0] = 20;
   int incomingByte = 0;
   Serial.begin(9600);
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
@@ -176,22 +177,44 @@ void loop() {
   int letra;
   bool antiloop = true;
   bool antiloop2 = true;
+  bool entrar = true;
+  int posicion[2];
+  int nueva_posicion[2];
   int incomingByte;
+  int guardar_posicion[2];
   while(true){
-    leer_registros();
-    
-    int posicion[2];
-    int nueva_posicion[2];
-    cambio_detectado(posicion, nueva_posicion);
-    mostrar_estado_tablero();
-    guardar_estado_tablero();
-    if (posicion[0] != nueva_posicion[0] && posicion[1] != nueva_posicion[1]){
-       cordenadax = posicion[0];
-       cordenaday = 7 - posicion[1];
-       movimientox = nueva_posicion[0];
-       movimientoy = 7 - nueva_posicion[1];
-    } 
-    letra = 0;
+    antiloop = true;
+    while(antiloop){
+    entrar = true;
+    guardar_posicion[0] = 20;
+    while(entrar){
+      leer_registros();
+      cambio_detectado(posicion, nueva_posicion);
+      mostrar_estado_tablero();
+      guardar_estado_tablero();
+      if(nueva_posicion[1] != guardar_posicion[1] || nueva_posicion[0] != guardar_posicion[0]){
+        if(guardar_posicion[0] < 8){
+          Serial.print(posicion[0]);
+          Serial.print("  -  ");
+          Serial.print(posicion[1]);
+          Serial.print("---------");
+          Serial.print(nueva_posicion[0]);
+          Serial.print("  -  ");
+          Serial.print(nueva_posicion[1]);
+          cordenadax = posicion[0];
+           cordenaday = 7 - posicion[1];
+           movimientox = nueva_posicion[0];
+           movimientoy = 7 - nueva_posicion[1];
+          Serial.println(" end");
+          entrar = false;
+        }
+        guardar_posicion[1] = nueva_posicion[1];
+        guardar_posicion[0] = nueva_posicion[0];
+      }
+      delay(1000);
+      delay(POLL_DELAY_MSEC);
+    }
+    Serial.println("paso");
     if(jaquemate(tablero,true)){
       Serial.println("rey blanco no existe, fin del juego. Ganan negras");
       break;
@@ -200,27 +223,23 @@ void loop() {
       Serial.println("rey blanco en jaque");
     }
     Serial.println("blancas");
-    
       Serial.print("|");
       Serial.print(tablero[cordenaday][cordenadax].id_pieza);
       Serial.print("|");
       if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1)){
         Serial.println("movimiento correcto");
-        antiloop2 = false;
+        antiloop = false;
       }
       else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         Serial.println("movimiento correcto");
-        antiloop2 = false;
+        antiloop = false;
       }
       else{
         Serial.println("movimiento incorrecto");
         letra = 0;
-        antiloop2 = true;
         antiloop = true;
       }
     }
-    antiloop = true;
-    antiloop2 = true;
     //Gana o pierde? (Iluminar)
     //Actualizar el movimiento enemigo (comió? cambió?)
     //Busca jaque (Hay? Mostrar desde donde e iluminar el boton)
@@ -228,55 +247,68 @@ void loop() {
       //Se rinde? 
     //CICLO    
       //Esperar movimiento del chaboncito (Mostrar posiciones posibles, ofrecer movimientos especiales)
-      letra = 0;
-      if(jaquemate(tablero,false)){
-        Serial.println("rey negro no existe, fin del juego. Ganan blancas");
-      }
-      if(jaque(tablero,false)){
-        Serial.println("rey negro en jaque");
-      }
-      Serial.println("negras");
-      while(antiloop2){
-        while(antiloop){
-        if(letra == 0){
-              cordenaday = 7 - incomingByte;
+      antiloop = true;
+      while(antiloop){
+        entrar = true;
+        guardar_posicion[0] = 20;
+        while(entrar){
+          leer_registros();
+          cambio_detectado(posicion, nueva_posicion);
+          mostrar_estado_tablero();
+          guardar_estado_tablero();
+          if(nueva_posicion[1] != guardar_posicion[1] || nueva_posicion[0] != guardar_posicion[0]){
+            if(guardar_posicion[0] < 8){
+              Serial.print(posicion[0]);
+              Serial.print("  -  ");
+              Serial.print(posicion[1]);
+              Serial.print("---------");
+              Serial.print(nueva_posicion[0]);
+              Serial.print("  -  ");
+              Serial.print(nueva_posicion[1]);
+              cordenadax = posicion[0];
+               cordenaday = 7 - posicion[1];
+               movimientox = nueva_posicion[0];
+               movimientoy = 7 - nueva_posicion[1];
+              Serial.println(" end");
+              entrar = false;
             }
-            else if(letra == 1){
-              cordenadax = incomingByte;
-            }
-            else if(letra == 2){
-              movimientoy = 7 - incomingByte;
-            }
-            else if(letra == 3){
-              movimientox = incomingByte;
-              antiloop = false;
-            }
+            guardar_posicion[1] = nueva_posicion[1];
+            guardar_posicion[0] = nueva_posicion[0];
+          }
+          delay(1000);
+          delay(POLL_DELAY_MSEC);
+        }
+        Serial.println("paso");
+          letra = 0;
+          if(jaquemate(tablero,false)){
+            Serial.println("rey negro no existe, fin del juego. Ganan blancas");
+          }
+          if(jaque(tablero,false)){
+            Serial.println("rey negro en jaque");
+          }
+          Serial.println("negras");
+          Serial.print("|");
+          Serial.print(tablero[cordenaday][cordenadax].id_pieza);
+          Serial.print("|");
+          if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,0)){
+            Serial.println("movimiento correcto");
+            antiloop = false;
+          }
+          else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
+            Serial.println("movimiento correcto");
+            antiloop = false;
+          }
+          else{
+            Serial.println("movimiento incorrecto");
+            antiloop = true;
+          }
       }
-      Serial.print("|");
-      Serial.print(tablero[cordenaday][cordenadax].id_pieza);
-      Serial.print("|");
-      if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,0)){
-        Serial.println("movimiento correcto");
-        antiloop2 = false;
-      }
-      else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
-        Serial.println("movimiento correcto");
-        antiloop2 = false;
-      }
-      else{
-        Serial.println("movimiento incorrecto");
-        letra = 0;
-        antiloop2 = true;
-        antiloop = true;
-      }
-    }
-    antiloop = true;
-    antiloop2 = true;
       //Verificar movimiento (Si está mal poner el tablero en rojo. Si mueve varios titila en rojo el boton tambien. Verificar captura al paso)
       
     //Coronacion?
     //Espera boton
     //Envia mensaje (Cambia de tablero)
+}
 }
 
 void Inicializar_Tablero(Pieza Tablero[8][8]){

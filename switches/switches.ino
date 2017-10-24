@@ -73,8 +73,8 @@ int cambio_detectado(int posicion[2], int nueva_posicion[2])
         return;
       }
 	}
-	return 0;
-}
+	
+}return 0;
 }
 
 // Guardo el estado actual del tablero para ver si hubo algun cambio
@@ -113,7 +113,7 @@ void mostrar_estado_tablero()
     {
 	    for(columna = 0; columna < 8; columna++)
 	    {
-	    	if(tablero[fila][columna] == 0 && (fila != 5 && columna != 5)){
+	    	if(tablero[fila][columna] == 0){
 	    		encender_led(63 - led);
 	    	}
 	    	else
@@ -125,7 +125,7 @@ void mostrar_estado_tablero()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-
+int guardar_posicion[2];
 void setup()
 {
   // the wiki features a much more basic setup line:
@@ -144,24 +144,31 @@ void setup()
     leer_registros();
     mostrar_estado_tablero();
     guardar_estado_tablero();
+    guardar_posicion[0] = 20;
 }
 
 void loop() 
 {
     leer_registros();
-    
     int posicion[2];
     int nueva_posicion[2];
     cambio_detectado(posicion, nueva_posicion);
     mostrar_estado_tablero();
     guardar_estado_tablero();
-    Serial.print(posicion[0]);
-    Serial.print("  -  ");
-    Serial.print(posicion[1]);
-    Serial.print("---------");
-    Serial.print(nueva_posicion[0]);
-    Serial.print("  -  ");
-    Serial.println(nueva_posicion[1]);
+    if(nueva_posicion[1] != guardar_posicion[1] || nueva_posicion[0] != guardar_posicion[0]){
+      if(guardar_posicion[0] < 8){
+        Serial.print(posicion[0]);
+        Serial.print("  -  ");
+        Serial.print(posicion[1]);
+        Serial.print("---------");
+        Serial.print(nueva_posicion[0]);
+        Serial.print("  -  ");
+        Serial.print(nueva_posicion[1]);
+        Serial.println(" end");
+      }
+      guardar_posicion[1] = nueva_posicion[1];
+      guardar_posicion[0] = nueva_posicion[0];
+    }
     delay(1000);
     delay(POLL_DELAY_MSEC);
 }
