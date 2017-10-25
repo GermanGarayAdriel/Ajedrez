@@ -250,29 +250,33 @@ void loop() {
       antiloop = true;
       while(antiloop){
         entrar = true;
-        int letra = 0;
         guardar_posicion[0] = 20;
         while(entrar){
-          if (Serial.available() > 0) {
-          // lee el byte de entrada:
-          incomingByte = Serial.read();
-          if(letra == 0){
-            cordenaday = incomingByte - 48;
+          leer_registros();
+          cambio_detectado(posicion, nueva_posicion);
+          mostrar_estado_tablero();
+          guardar_estado_tablero();
+          if(nueva_posicion[1] != guardar_posicion[1] || nueva_posicion[0] != guardar_posicion[0]){
+            if(guardar_posicion[0] < 8){
+              Serial.print(posicion[0]);
+              Serial.print("  -  ");
+              Serial.print(posicion[1]);
+              Serial.print("--------");
+              Serial.print(nueva_posicion[0]);
+              Serial.print("  -  ");
+              Serial.print(nueva_posicion[1]);
+              cordenadax = posicion[0];
+               cordenaday = 7 - posicion[1];
+               movimientox = nueva_posicion[0];
+               movimientoy = 7 - nueva_posicion[1];
+              Serial.println(" end");
+              entrar = false;
+            }
+            guardar_posicion[1] = nueva_posicion[1];
+            guardar_posicion[0] = nueva_posicion[0];
           }
-          else if(letra == 1){
-            cordenadax = incomingByte - 48;
-          }
-          else if(letra == 2){
-            movimientoy = incomingByte - 48;
-          }
-          else if(letra == 3){
-            movimientox = incomingByte - 48;
-            entrar = false;
-          }
-          letra = letra + 1;
-          //lo vuelca a pantalla
-          Serial.print("He recibido: "); Serial.println(incomingByte - 48, DEC);
-          }
+          delay(1000);
+          delay(POLL_DELAY_MSEC);
         }
         Serial.println("paso");
           letra = 0;
