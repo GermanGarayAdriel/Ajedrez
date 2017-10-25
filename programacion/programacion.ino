@@ -583,14 +583,20 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
         }
     }
     else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
+      Serial.print("er");
         for(int i = 1;i <= comprobantex;i++){
+          Serial.print("er2");
             if(cordenadax < movimientox){ // va de izquierda a derecha
+              Serial.print("er3");
                 if((Tablero[cordenaday][cordenadax+i].id_pieza != 100 && Tablero[cordenaday][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
+                  Serial.print("er4");
                     return false;
                 }
             }
             else if(cordenadax > movimientox){ // va de derecha a izquierda
+              Serial.print("ar3");
                 if((Tablero[cordenaday][cordenadax-i].id_pieza != 100 && Tablero[cordenaday][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
+                  Serial.print("ar4");
                     return false;
                 }
             }
@@ -928,16 +934,23 @@ bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,in
     }
 }
 bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){
+  Serial.print("|");
     int comprobantey, comprobantex;
     comprobantey = cordenaday - movimientoy;
     comprobantex = cordenadax - movimientox;
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
+    Serial.print("2|");
     if((cordenaday == 0 || cordenaday == 7) && (cordenadax == 0 || cordenadax == 7 || cordenadax == 4)){
+      Serial.print("3|");
       if((comprobantex == 2 || comprobantex == 3) && comprobantey == 0){
+        Serial.print("4|");
           if(Tablero[cordenaday][cordenadax].movimiento == true){
-              if(movimientox > cordenadax){ // enroque largo
-                  if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,7)){
+            Serial.print("5|");
+              if(movimientox < cordenadax){ // enroque largo
+                Serial.print("6|");
+                  if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,1)){
+                    Serial.print("7|");
                       Tablero[cordenaday][cordenadax].movimiento = false;
                       Tablero[movimientoy][movimientox].movimiento = false;
                       cambiar(Tablero,cordenaday,4,cordenaday,6);
@@ -945,8 +958,14 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
                       return true;
                   }
               }
-              else if(movimientox < cordenadax){// enroque corto
-                  if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,0)){
+              else if(movimientox > cordenadax){// enroque corto
+                Serial.print("8|");
+                Serial.print(Tablero[cordenaday][0].movimiento);
+                Serial.print("-");
+                Serial.print(intercepcion(Tablero,cordenaday,4,cordenaday,0));
+                Serial.print("-");
+                  if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,6)){
+                    Serial.print("9|");
                       Tablero[cordenaday][cordenadax].movimiento = false;
                       Tablero[movimientoy][movimientox].movimiento = false;
                       cambiar(Tablero,cordenaday,4,cordenaday,2);
