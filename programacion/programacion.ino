@@ -71,7 +71,6 @@ void setup() {
 
     // Read in and display the pin states at startup.
     leer_registros();
-    mostrar_estado_tablero();
     guardar_estado_tablero();
 }
 void leer_registros()
@@ -149,21 +148,46 @@ void apagar_led(int led)
 
 
 //Muestro el estado del tablero
-void mostrar_estado_tablero()
+void mostrar_estado_tablero(Pieza tablero[8][8],bool turno)
 {
+  /*bool color;
+    int id_pieza=0;
+    bool movimiento;
+    int posicionOrigenX;
+    int posicionOrigenY;*/
     int fila, columna, led = 0;
 
     for(fila = 0; fila < 8; fila++)
     {
       for(columna = 0; columna < 8; columna++)
       {
-        if(tablero_buscar[fila][columna] == 0){
+        if(tablero[(7 - columna)][fila].id_pieza != 100 && tablero[(7 - columna)][fila].color == turno){
+          if(tablero[(7 - columna)][fila].id_pieza == 1){
+            leds[63 - led] = CRGB::Red;
+          }
+          else if(tablero[(7 - columna)][fila].id_pieza == 2){
+            leds[63 - led] = CRGB::Salmon;
+          }
+          else if(tablero[(7 - columna)][fila].id_pieza == 3){
+            leds[63 - led] = CRGB::Yellow;
+          }
+          else if(tablero[(7 - columna)][fila].id_pieza == 4){
+            leds[63 - led] = CRGB::YellowGreen;
+          }
+          else if(tablero[(7 - columna)][fila].id_pieza == 5){
+            leds[63 - led] = CRGB::Green;
+          }
+          else if(tablero[(7 - columna)][fila].id_pieza == 6){
+            leds[63 - led] = CRGB::Turquoise;
+          }
+        }
+        else if(tablero_buscar[fila][columna] == 0){
           encender_led(63 - led);
         }
-        else
+        else{
           apagar_led(63 - led);
-
-            led++;
+        }
+        led++;
       }
     }
 }
@@ -190,8 +214,9 @@ void loop() {
     while(entrar){
       leer_registros();
       cambio_detectado(posicion, nueva_posicion);
-      mostrar_estado_tablero();
+      mostrar_estado_tablero(tablero,0);
       guardar_estado_tablero();
+      
       if(nueva_posicion[1] != guardar_posicion[1] || nueva_posicion[0] != guardar_posicion[0]){
         if(guardar_posicion[0] < 8){
           Serial.print(posicion[0]);
@@ -355,6 +380,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
             }
             // a partir de aca es con las fichas blancas
             else if((x == 0 || x == 7) && y == 7){
+                leds[((x*8)+y)] = CRGB::Yellow;
                 Tablero[y][x].id_pieza = torre;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = true;
@@ -362,6 +388,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if((x == 2 || x == 5) && y == 7){
+                leds[((x*8)+y)] = CRGB::Pink;
                 Tablero[y][x].id_pieza = alfil;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -369,6 +396,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if((x == 1 || x == 6) && y == 7){
+                leds[((x*8)+y)] = CRGB::Green;
                 Tablero[y][x].id_pieza = caballo;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -376,6 +404,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if(x == 3 && y == 7){
+                leds[((x*8)+y)] = CRGB::YellowGreen;
                 Tablero[y][x].id_pieza = reina;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -383,6 +412,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if(x == 4 && y == 7){
+                leds[((x*8)+y)] = CRGB::Red;
                 Tablero[y][x].id_pieza = rey;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = true;
@@ -390,6 +420,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if(y == 6){
+                leds[((x*8)+y)] = CRGB::Blue;
                 Tablero[y][x].id_pieza = peon;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -405,6 +436,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
             }
         }
     }
+    FastLED.show();
 }
 
 bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno){ //Se verifica el movimiento de una pieza
@@ -853,11 +885,11 @@ bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int mov
     comprobantex = cordenadax - movimientox;
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
-    int leds[2];
+    int leds2[2];
     if(comprobantex == comprobantey){ // si la pieza se mueve en diagonal utiliza este IF
         for(int i = 1;i < comprobantex;i++){
-            leds[0] = cordenadax + i;
-            leds[1] = cordenaday + i;
+            leds2[0] = cordenadax + i;
+            leds2[1] = cordenaday + i;
             if(cordenadax < movimientox && cordenaday < movimientoy){
                 //prenden el led de la cordenada leds[]
                 if(Tablero[cordenaday+i][cordenadax+i].id_pieza != 0){
@@ -885,9 +917,9 @@ bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int mov
         }
     }
     else if(comprobantex == 0){ // si se mueve de forma vertical utiliza este IF
-        leds[0] = cordenadax;
+        leds2[0] = cordenadax;
         for(int i = 1;i < comprobantey;i++){ // mueve la pieza de lugar en lugar hasta hallar a una pieza
-            leds[1] = cordenaday + i;
+            leds2[1] = cordenaday + i;
             if(cordenaday < movimientoy){ // va de arriba a abajo
                 //prenden el led de la cordenada leds[]
                 if(Tablero[cordenaday+i][cordenadax].id_pieza != 0){ // si encuentra un lugar en con una id valida significa que hay una pieza y devuelve false *2
@@ -903,9 +935,9 @@ bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int mov
         }
     }
     else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
-        leds[1] = cordenaday;
+        leds2[1] = cordenaday;
         for(int i = 1;i < comprobantex;i++){
-            leds[0] = cordenaday + i;
+            leds2[0] = cordenaday + i;
             if(cordenadax < movimientox){ // va de izquierda a derecha
                 //prenden el led de la cordenada leds[]
                 if(Tablero[cordenaday][cordenadax+i].id_pieza != 0){ // * same2
@@ -953,8 +985,8 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
                     Serial.print("7|");
                       Tablero[cordenaday][cordenadax].movimiento = false;
                       Tablero[movimientoy][movimientox].movimiento = false;
-                      cambiar(Tablero,cordenaday,4,cordenaday,6);
-                      cambiar(Tablero,cordenaday,7,cordenaday,5);
+                      cambiar(Tablero,cordenaday,4,cordenaday,2);
+                      cambiar(Tablero,cordenaday,0,cordenaday,3);
                       return true;
                   }
               }
@@ -968,8 +1000,8 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
                     Serial.print("9|");
                       Tablero[cordenaday][cordenadax].movimiento = false;
                       Tablero[movimientoy][movimientox].movimiento = false;
-                      cambiar(Tablero,cordenaday,4,cordenaday,2);
-                      cambiar(Tablero,cordenaday,0,cordenaday,3);
+                      cambiar(Tablero,cordenaday,4,cordenaday,6);
+                      cambiar(Tablero,cordenaday,7,cordenaday,5);
                       return true;
                   }
               }
