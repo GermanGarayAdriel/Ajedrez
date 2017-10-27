@@ -7,6 +7,8 @@ int alfil = 4;
 int caballo = 5;
 int peon = 6;
 #include "FastLED.h"
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
 // fast led constants
 #define DATA_PIN    11        // change to your data pin
@@ -44,6 +46,8 @@ struct Pieza{
 Pieza tablero[8][8];
 
   // void
+  void escribirMensaje(String oracion,int y,int x);
+  void borrar();
   void arreglar(Pieza Tablero[8][8],int turno);
   void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   void Inicializar_Tablero(Pieza Tablero[8][8]);
@@ -57,6 +61,9 @@ Pieza tablero[8][8];
   bool jaquemate(Pieza Tablero[8][8],bool color);
   bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
 int guardar_posicion[2];
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 void setup() {
   guardar_posicion[0] = 20;
   int incomingByte = 0;
@@ -72,6 +79,9 @@ void setup() {
     // Read in and display the pin states at startup.
     leer_registros();
     guardar_estado_tablero();
+    lcd.init();
+  // Turn on the blacklight and print a message.
+  lcd.backlight();
 }
 void leer_registros()
 {
@@ -110,12 +120,10 @@ int cambio_detectado(int posicion[2], int nueva_posicion[2])
       if (tablero_buscar[fila][columna] != tableroAnterior[fila][columna] && tablero_buscar[fila][columna] == 1){
         posicion[0] = fila;
         posicion[1] = columna;
-        return;
       }
       else if (tablero_buscar[fila][columna] != tableroAnterior[fila][columna] && (tablero_buscar[fila][columna] == 0)){
         nueva_posicion[0] = fila;
         nueva_posicion[1] = columna;
-        return;
       }
   }
   return 0;
@@ -208,6 +216,8 @@ void loop() {
   int guardar_posicion[2];
   while(true){
     antiloop = true;
+    borrar();
+      escribirMensaje("turno blancas",0,0);
     while(antiloop){
     entrar = true;
     guardar_posicion[0] = 20;
@@ -240,12 +250,18 @@ void loop() {
       delay(POLL_DELAY_MSEC);
     }
     Serial.println("paso");
+    borrar();
     if(jaquemate(tablero,true)){
       Serial.println("rey blanco no existe, fin del juego. Ganan negras");
+      borrar();
+      escribirMensaje("blanco muerto",0,0);
+      escribirMensaje("negras ganan",0,1);
       break;
     }
     if(jaque(tablero,true)){
       Serial.println("rey blanco en jaque");
+      borrar();
+      escribirMensaje("blanco en jaque",0,1);
     }
     Serial.println("blancas");
       Serial.print("|");
@@ -253,14 +269,20 @@ void loop() {
       Serial.print("|");
       if(Verificar_Movimiento(tablero,cordenaday,cordenadax,movimientoy,movimientox,1)){
         Serial.println("movimiento correcto");
+        borrar();
+        escribirMensaje("pasando turno",0,0);
         antiloop = false;
       }
       else if(verificar_reytorre(tablero,cordenaday,cordenadax,movimientoy,movimientox)){
         Serial.println("movimiento correcto");
+        borrar();
+        escribirMensaje("pasando turno",0,0);
         antiloop = false;
       }
       else{
         Serial.println("movimiento incorrecto");
+        borrar();
+        escribirMensaje("incorrecto",0,0);
         letra = 0;
         antiloop = true;
       }
@@ -272,6 +294,7 @@ void loop() {
       //Se rinde? 
     //CICLO    
       //Esperar movimiento del chaboncito (Mostrar posiciones posibles, ofrecer movimientos especiales)
+      mostrar_estado_tablero(tablero,0);
       antiloop = true;
       while(antiloop){
         entrar = true;
@@ -517,7 +540,6 @@ bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,in
             cambiar(Tablero,cordenaday,cordenadax,movimientoy,movimientox); // * same
         }
         else{
-          Serial.println ("segundo");
             return false; // si el movimiento o pieza no son validas devuelve false de lo contrario sera true
         }
     }
@@ -557,44 +579,25 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
     comprobantex = cordenadax - movimientox;
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
-    Serial.println(" ZERO ");
-    Serial.print("cy: ");
-    Serial.print(cordenaday);
-    Serial.print(" | cx: ");
-    Serial.print(cordenadax);
-    Serial.print(" | my: ");
-    Serial.print(movimientoy);
-    Serial.print(" | mx: ");
-    Serial.println(movimientox);
     if(comprobantex == comprobantey){ // si la pieza se mueve en diagonal utiliza este IF
-      Serial.println(" 1ro ");
         for(int i = 1;i <= comprobantex;i++){
-          Serial.println(" 2do ");
             if(cordenadax < movimientox && cordenaday < movimientoy){
-              Serial.println(" 3ro ++");
                 if((Tablero[cordenaday+i][cordenadax+i].id_pieza != 100 && Tablero[cordenaday+i][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){
-                  Serial.println(" 4to ");
                     return false;
                 }
             }
             else if(cordenadax > movimientox && cordenaday > movimientoy){
-              Serial.println(" 3ro ++++");
                 if((Tablero[cordenaday-i][cordenadax-i].id_pieza != 100 && Tablero[cordenaday-i][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){
-                  Serial.println(" 4to ");
                     return false;
                 }
             }
             else if(cordenadax < movimientox && cordenaday > movimientoy){
-              Serial.println(" 3ro ..");
                 if((Tablero[cordenaday-i][cordenadax+i].id_pieza != 100 && Tablero[cordenaday-i][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){
-                  Serial.println(" 4to ");
                     return false;
                 }
             }
             else if(cordenadax > movimientox && cordenaday < movimientoy){
-              Serial.println(" 3ro ....");
                 if((Tablero[cordenaday+i][cordenadax-i].id_pieza != 100 && Tablero[cordenaday+i][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){
-                  Serial.println(" 4to ");
                     return false;
                 }
             }
@@ -615,26 +618,19 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimi
         }
     }
     else if(comprobantey == 0){ // si se mueve de forma horizontal utiliza este IF
-      Serial.print("er");
         for(int i = 1;i <= comprobantex;i++){
-          Serial.print("er2");
             if(cordenadax < movimientox){ // va de izquierda a derecha
-              Serial.print("er3");
                 if((Tablero[cordenaday][cordenadax+i].id_pieza != 100 && Tablero[cordenaday][cordenadax+i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
-                  Serial.print("er4");
                     return false;
                 }
             }
             else if(cordenadax > movimientox){ // va de derecha a izquierda
-              Serial.print("ar3");
                 if((Tablero[cordenaday][cordenadax-i].id_pieza != 100 && Tablero[cordenaday][cordenadax-i].color == Tablero[cordenaday][cordenadax].color)){ // * same2
-                  Serial.print("ar4");
                     return false;
                 }
             }
         }
     }
-    Serial.println("fin");
     return true;
 }
 void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){ //Cambia la pieza de un lugar a otro
@@ -673,9 +669,6 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
         if(Tablero[i][x].id_pieza == 1 && Tablero[i][x].color == color){
           reyPropio[0] = i;
           reyPropio[1] = x;
-          Serial.print(Tablero[i][x].id_pieza);
-          Serial.print(" | ");
-          Serial.println(Tablero[i][x].color);
         }
         x = x + 1;
       }
@@ -685,57 +678,41 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
     i = 1;
     while(i < 8){
       if(Tablero[reyPropio[0] + 2][reyPropio[1] + 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 1ro");
-        Serial.println(Tablero[reyPropio[0] + 2][reyPropio[1] + 1].id_pieza);
         if(Tablero[reyPropio[0] + 2][reyPropio[1] + 1].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] + 2][reyPropio[1] - 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 2do");
-        Serial.println(Tablero[reyPropio[0] + 2][reyPropio[1] - 1].id_pieza);
         if(Tablero[reyPropio[0] + 2][reyPropio[1] - 1].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] - 2][reyPropio[1] + 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 3ro");
-        Serial.println(Tablero[reyPropio[0] - 2][reyPropio[1] + 1].id_pieza);
         if(Tablero[reyPropio[0] - 2][reyPropio[1] + 1].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] - 2][reyPropio[1] - 1].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 4to");
-        Serial.println(Tablero[reyPropio[0] - 2][reyPropio[1] - 1].id_pieza);
         if(Tablero[reyPropio[0] - 2][reyPropio[1] - 1].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] + 1][reyPropio[1] + 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 5to");
-        Serial.println(Tablero[reyPropio[0] + 1][reyPropio[1] + 2].id_pieza);
         if(Tablero[reyPropio[0] + 1][reyPropio[1] + 2].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] - 1][reyPropio[1] + 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 6to");
-        Serial.println(Tablero[reyPropio[0] - 1][reyPropio[1] + 2].id_pieza);
         if(Tablero[reyPropio[0] - 1][reyPropio[1] + 2].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] + 1][reyPropio[1] - 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 7mo");
-        Serial.println(Tablero[reyPropio[0] + 1][reyPropio[1] - 2].id_pieza);
         if(Tablero[reyPropio[0] + 1][reyPropio[1] - 2].id_pieza == 5){
           return true;
         }
       }
       if(Tablero[reyPropio[0] - 1][reyPropio[1] - 2].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-        Serial.println("f 8vo");
-        Serial.println(Tablero[reyPropio[0] - 1][reyPropio[1] - 2].id_pieza);
         if(Tablero[reyPropio[0] - 1][reyPropio[1] - 2].id_pieza == 5){
           return true;
         }
@@ -744,8 +721,6 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1]) && Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza != 100){
           if(Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza == 2 || Tablero[reyPropio[0] + i][reyPropio[1]].id_pieza == 3){
             if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-            Serial.println("adentro: 1");
-            Serial.println(i);
             return true;
             }
           }
@@ -755,8 +730,6 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0],reyPropio[1] + i) && Tablero[reyPropio[0]][reyPropio[1] + i].id_pieza != 100){
           if(Tablero[reyPropio[0]][reyPropio[1] + i].id_pieza == 2 || Tablero[reyPropio[0]][reyPropio[1] + i].id_pieza == 3){
             if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-            Serial.println("adentro: 2");
-            Serial.println(i);
             return true;
             }
           }
@@ -766,8 +739,6 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1]) && Tablero[reyPropio[0] - i][reyPropio[1]].id_pieza != 100){
           if(Tablero[reyPropio[0] - i][reyPropio[1]].id_pieza == 2 || Tablero[reyPropio[0] - i][reyPropio[1]].id_pieza == 3){
             if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-            Serial.println("adentro: 3");
-            Serial.println(i);
             return true;
             }
           }
@@ -777,10 +748,6 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
          if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0],reyPropio[1] - i) && Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza != 100 && (reyPropio[1] - i) >= 0){
           if(Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza == 2 || Tablero[reyPropio[0]][reyPropio[1] - i].id_pieza == 3){
             if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-              Serial.print("adentro: 4 i: ");
-              Serial.print(i);
-              Serial.print(" reyPropio: ");
-              Serial.println(reyPropio[1] - i);
               return true;
             }
           }
@@ -790,11 +757,9 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] + 1) && Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza != 100){
           if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
             if(Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza == 4){
-              Serial.println("adentro: 5");
               return true;
             }
             if(Tablero[reyPropio[0] + i][reyPropio[1] + i].id_pieza == 6 && i == 1){
-              Serial.println("adentro: 6");
               return true;
             }
           }
@@ -804,11 +769,9 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1] - i) && Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza != 100){
           if(Tablero[reyPropio[0]][reyPropio[1] - i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
             if(Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza == 4){
-              Serial.println("adentro: 7");
               return true;
             }
             if(Tablero[reyPropio[0] - i][reyPropio[1] - i].id_pieza == 6 && i == 1){
-              Serial.println("adentro: 8");
               return true;
             }
           }
@@ -816,29 +779,14 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
       }
       if((reyPropio[0] - i) >= 0 && (reyPropio[1] + i) < 8){
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] - i,reyPropio[1] + i) && Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza != 100){
-        Serial.print("primero adentro: ");
-        Serial.print(i);
-        Serial.print(" | ");
-        Serial.print(reyPropio[0] - i);
-        Serial.print(" | ");
-        Serial.print(reyPropio[1] + i);
-        Serial.print(" | ");
-        Serial.print(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza);
-        Serial.print(" | ");
-        Serial.println(Tablero[reyPropio[0] - i][reyPropio[1] + i].color);
-        
           if(Tablero[reyPropio[0] - i][reyPropio[1] + i].color != Tablero[reyPropio[0]][reyPropio[1]].color){
-            Serial.println("segundo adentro: ");
             if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 4){
-              Serial.println("adentro: 9");
               return true;
             }
             if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 2){
-              Serial.println("adentro: 9,5"); 
               return true;
             }
             if(Tablero[reyPropio[0] - i][reyPropio[1] + i].id_pieza == 6 && i == 1){
-              Serial.println("adentro: 10");
               return true;
             }
           }
@@ -847,11 +795,9 @@ bool jaque(Pieza Tablero[8][8],bool color){ // esta funcion verifica si el rey e
       if((reyPropio[0] + i) < 8 && (reyPropio[1] - i) >= 0){
         if(intercepcion(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] - i) && Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza != 100 && matar(Tablero,reyPropio[0],reyPropio[1],reyPropio[0] + i,reyPropio[1] - i)){
           if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 4){
-            Serial.println("adentro: 11");
             return true;
           }
           if(Tablero[reyPropio[0] + i][reyPropio[1] - i].id_pieza == 6 && i == 1){
-            Serial.println("adentro: 12");
             return true;
           }
         }
@@ -966,23 +912,16 @@ bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,in
     }
 }
 bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox){
-  Serial.print("|");
     int comprobantey, comprobantex;
     comprobantey = cordenaday - movimientoy;
     comprobantex = cordenadax - movimientox;
     comprobantex = sqrt(pow(comprobantex,2));
     comprobantey = sqrt(pow(comprobantey,2));
-    Serial.print("2|");
     if((cordenaday == 0 || cordenaday == 7) && (cordenadax == 0 || cordenadax == 7 || cordenadax == 4)){
-      Serial.print("3|");
       if((comprobantex == 2 || comprobantex == 3) && comprobantey == 0){
-        Serial.print("4|");
           if(Tablero[cordenaday][cordenadax].movimiento == true){
-            Serial.print("5|");
               if(movimientox < cordenadax){ // enroque largo
-                Serial.print("6|");
                   if(Tablero[cordenaday][7].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,1)){
-                    Serial.print("7|");
                       Tablero[cordenaday][cordenadax].movimiento = false;
                       Tablero[movimientoy][movimientox].movimiento = false;
                       cambiar(Tablero,cordenaday,4,cordenaday,2);
@@ -991,13 +930,7 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
                   }
               }
               else if(movimientox > cordenadax){// enroque corto
-                Serial.print("8|");
-                Serial.print(Tablero[cordenaday][0].movimiento);
-                Serial.print("-");
-                Serial.print(intercepcion(Tablero,cordenaday,4,cordenaday,0));
-                Serial.print("-");
                   if(Tablero[cordenaday][0].movimiento == true && intercepcion(Tablero,cordenaday,4,cordenaday,6)){
-                    Serial.print("9|");
                       Tablero[cordenaday][cordenadax].movimiento = false;
                       Tablero[movimientoy][movimientox].movimiento = false;
                       cambiar(Tablero,cordenaday,4,cordenaday,6);
@@ -1009,4 +942,14 @@ bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int 
       }
     }
     return false;
+}
+void escribirMensaje(String oracion,int y,int x){
+  lcd.setCursor(y,x);
+  lcd.print(oracion);
+}
+void borrar(){
+  lcd.setCursor(0,0);
+  lcd.print("                ");
+  lcd.setCursor(0,1);
+  lcd.print("                ");
 }
