@@ -51,16 +51,23 @@ Pieza tablero[8][8];
   void arreglar(Pieza Tablero[8][8],int turno);
   void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   void Inicializar_Tablero(Pieza Tablero[8][8]);
+  void leer_registros();
+  void mostrar_estado_tablero(Pieza tablero[8][8],bool turno);
   // bool
-  bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
+  bool caminoPrendido(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox);
   bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
   bool seguir(Pieza Tablero[8][8]);
   bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno);
   bool verificar_reytorre(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox);
-  bool jaque(Pieza Tablero[8][8],int turno);
+  bool jaque(Pieza Tablero[8][8],bool color);
   bool jaquemate(Pieza Tablero[8][8],bool color);
   bool matar(Pieza Tablero[8][8], int cordenaday,int cordenadax,int movimientoy,int movimientox);
 int guardar_posicion[2];
+int cambio_detectado(int posicion[2], int nueva_posicion[2]);
+void guardar_estado_tablero();
+
+void encender_led(int led);
+void apagar_led(int led);
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -171,29 +178,29 @@ void mostrar_estado_tablero(Pieza tablero[8][8],bool turno)
       {
         if(tablero[(7 - columna)][fila].id_pieza != 100 && tablero[(7 - columna)][fila].color == turno){
           if(tablero[(7 - columna)][fila].id_pieza == 1){
-            leds[63 - led] = CRGB::Red;
+            leds[(columna*8)+(7-fila)] = CRGB::Red;
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 2){
-            leds[63 - led] = CRGB::Salmon;
+            leds[(columna*8)+(7-fila)] = CRGB::Salmon;
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 3){
-            leds[63 - led] = CRGB::Yellow;
+            leds[(columna*8)+(7-fila)] = CRGB::Yellow;
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 4){
-            leds[63 - led] = CRGB::YellowGreen;
+            leds[(columna*8)+(7-fila)] = CRGB::YellowGreen;
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 5){
-            leds[63 - led] = CRGB::Green;
+            leds[(columna*8)+(7-fila)] = CRGB::Green;
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 6){
-            leds[63 - led] = CRGB::Turquoise;
+            leds[(columna*8)+(7-fila)] = CRGB::Turquoise;
           }
         }
-        else if(tablero_buscar[fila][columna] == 0){
-          encender_led(63 - led);
+        else if(tablero_buscar[7 - columna][fila] == 0){
+          encender_led((columna*8)+(7-fila));
         }
         else{
-          apagar_led(63 - led);
+          apagar_led((columna*8)+(7-fila));
         }
         led++;
       }
@@ -236,10 +243,14 @@ void loop() {
           Serial.print(nueva_posicion[0]);
           Serial.print("  -  ");
           Serial.print(nueva_posicion[1]);
-          cordenadax = posicion[0];
-           cordenaday = 7 - posicion[1];
-           movimientox = nueva_posicion[0];
-           movimientoy = 7 - nueva_posicion[1];
+          int x = posicion[0];
+          int y = 7 - posicion[1];
+          int x2 = nueva_posicion[0];
+          int y2 = 7 - nueva_posicion[1];
+          cordenadax = 7 - y;
+           cordenaday = x;
+           movimientox = 7 - y2;
+           movimientoy = x2;
           Serial.println(" end");
           entrar = false;
         }
