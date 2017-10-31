@@ -6,14 +6,14 @@ int torre = 3;
 int alfil = 4;
 int caballo = 5;
 int peon = 6;
-#include "FastLED.h"
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-
+#include <Adafruit_NeoPixel.h>
 // fast led constants
 #define DATA_PIN    11        // change to your data pin
 #define COLOR_ORDER GRB      // if colors are mismatched; change this
 #define NUM_LEDS    64       // change to the number of LEDs in your strip
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 #define LED_TYPE    WS2812B
 
@@ -30,9 +30,6 @@ int peon = 6;
 #define ENABLE    12  // Connects to Clock Enable pin the 165
 
 // 0 Significa que está siendo tocadillo
-
-// this creates a LED array to hold the values for each led in your strip
-CRGB leds[NUM_LEDS];
 
 byte tablero_buscar[8][8];
 byte tableroAnterior[8][8];
@@ -72,10 +69,10 @@ void apagar_led(int led);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup() {
+  pixels.begin();
   guardar_posicion[0] = 20;
   int incomingByte = 0;
   Serial.begin(9600);
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     pinMode(LOAD, OUTPUT);
     pinMode(ENABLE, OUTPUT);
     pinMode(CLOCK, OUTPUT);
@@ -150,14 +147,14 @@ void guardar_estado_tablero()
 
 void encender_led(int led)
 {
-    leds[led] = CRGB::Blue;
-    FastLED.show();
+    pixels.setPixelColor(led, pixels.Color(0,0,255));
+    pixels.show();
 }
 
 void apagar_led(int led)
 {
-  leds[led] = leds[led] = CRGB::Black;
-  FastLED.show();
+  pixels.setPixelColor(led, pixels.Color(0,0,0));
+  pixels.show();
 }
 
 
@@ -178,22 +175,22 @@ void mostrar_estado_tablero(Pieza tablero[8][8],bool turno)
       {
         if(tablero[(7 - columna)][fila].id_pieza != 100 && tablero[(7 - columna)][fila].color == turno){
           if(tablero[(7 - columna)][fila].id_pieza == 1){
-            leds[(columna*8)+(7-fila)] = CRGB::Red;
+            pixels.setPixelColor((columna*8)+(7-fila), pixels.Color(255,0,0));
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 2){
-            leds[(columna*8)+(7-fila)] = CRGB::Salmon;
+            pixels.setPixelColor((columna*8)+(7-fila), pixels.Color(255,0,255));
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 3){
-            leds[(columna*8)+(7-fila)] = CRGB::Yellow;
+            pixels.setPixelColor((columna*8)+(7-fila), pixels.Color(255,255,0));
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 4){
-            leds[(columna*8)+(7-fila)] = CRGB::YellowGreen;
+            pixels.setPixelColor((columna*8)+(7-fila), pixels.Color(255,255,255));
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 5){
-            leds[(columna*8)+(7-fila)] = CRGB::Green;
+            pixels.setPixelColor((columna*8)+(7-fila), pixels.Color(0,255,0));
           }
           else if(tablero[(7 - columna)][fila].id_pieza == 6){
-            leds[(columna*8)+(7-fila)] = CRGB::Turquoise;
+            pixels.setPixelColor((columna*8)+(7-fila), pixels.Color(0,204,255));
           }
         }
         else if(tablero_buscar[7 - columna][fila] == 0){
@@ -414,7 +411,6 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
             }
             // a partir de aca es con las fichas blancas
             else if((x == 0 || x == 7) && y == 7){
-                leds[((x*8)+y)] = CRGB::Yellow;
                 Tablero[y][x].id_pieza = torre;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = true;
@@ -422,7 +418,6 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if((x == 2 || x == 5) && y == 7){
-                leds[((x*8)+y)] = CRGB::Pink;
                 Tablero[y][x].id_pieza = alfil;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -430,7 +425,6 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if((x == 1 || x == 6) && y == 7){
-                leds[((x*8)+y)] = CRGB::Green;
                 Tablero[y][x].id_pieza = caballo;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -438,7 +432,6 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if(x == 3 && y == 7){
-                leds[((x*8)+y)] = CRGB::YellowGreen;
                 Tablero[y][x].id_pieza = reina;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -446,7 +439,6 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if(x == 4 && y == 7){
-                leds[((x*8)+y)] = CRGB::Red;
                 Tablero[y][x].id_pieza = rey;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = true;
@@ -454,7 +446,6 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
                 Tablero[y][x].posicionOrigenY = y;
             }
             else if(y == 6){
-                leds[((x*8)+y)] = CRGB::Blue;
                 Tablero[y][x].id_pieza = peon;
                 Tablero[y][x].color = false;
                 Tablero[y][x].movimiento = false;
@@ -470,7 +461,7 @@ void Inicializar_Tablero(Pieza Tablero[8][8]){
             }
         }
     }
-    FastLED.show();
+    pixels.begin();
 }
 
 bool Verificar_Movimiento(Pieza Tablero[8][8], int cordenaday, int cordenadax,int movimientoy,int movimientox,int turno){ //Se verifica el movimiento de una pieza
