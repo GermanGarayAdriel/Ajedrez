@@ -1,22 +1,18 @@
-#include <FastLED.h> //Incluyo libreria (Hay que instalarla)
-#define NUM_LEDS 40 //Cantidad de LEDS
+#include <Adafruit_NeoPixel.h> // hay que instalarlo
+#define NUM_LEDS 64 //Cantidad de LEDS
 #define DATA_PIN 11 //El pin
-
-CRGB leds[NUM_LEDS]; //Arreglo con los leds
-
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
 void setup() {
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS); //Inicializacion
+  pixels.begin();
 }
 
 void loop() {
-    leds[0] = CRGB::Red; //Indico el color
-    leds[12] = CRGB::Green; 
-    FastLED.show(); //Actualizo
+    pixels.setPixelColor(12, pixels.Color(250,161,165)); // el primer numero es el led y luego el color mediante rgb
+    pixels.show();// muestra todos los leds pre-configurados
     delay(1000);
       
-    leds[0] = CRGB::Black;
-    leds[12] = CRGB::Black; //Apago
-    FastLED.show();
+    pixels.setPixelColor(12, pixels.Color(0,0,0));
+    pixels.show();
     delay(1000);
   
 }
