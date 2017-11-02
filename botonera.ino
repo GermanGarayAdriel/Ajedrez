@@ -189,6 +189,8 @@ void setup()
     guardar_estado_tablero();
 }
 
+  int apreto = 0;
+  bool todavia = true;
 void loop() 
 {
     // Read the state of all zones
@@ -202,14 +204,17 @@ void loop()
     }
 
    // entra
-  bool apreto = 0;
-  if(digitalRead(boton) == LOW)
+  if(digitalRead(boton) == LOW && todavia)
   {
       apreto = 1 - apreto;
+      todavia = false;
+  }
+  else if(digitalRead(boton) == HIGH){
+    todavia = true;
   }
   if(apreto == 1){
     centesimas++;
-    if(centesimas == 10) { 
+    if(centesimas == 440) { 
       centesimas = 0;
       decimas++;
     }
@@ -225,19 +230,15 @@ void loop()
     botonLed.setPixelColor(0, botonLed.Color(0, 255, 0)); // Rojo: (255, 0, 0)), Azul: (0, 0, 255));
     botonLed.show(); // This sends the updated pixel color to the hardware.
   }
-
-  numero = centesimas + decimas * 10 + segundos * 100;
-  muestraNumero(numero);
+  if(centesimas % 4 == 0){
+    numero = (centesimas/4) + decimas * 10 + segundos * 100;
+    muestraNumero(numero);
+  }
   delay(10);
   if(apreto == 0){
     botonLed.setPixelColor(0, botonLed.Color(255, 0, 0)); // Rojo: (255, 0, 0)), Azul: (0, 0, 255));
     botonLed.show(); // This sends the updated pixel color to the hardware.
   }
 
-    delay(POLL_DELAY_MSEC);
-
-    // dejo el boton rojo
-    botonLed.setPixelColor(0, botonLed.Color(255, 0, 0)); // Rojo: (255, 0, 0)), Azul: (0, 0, 255));
-    botonLed.show(); // This sends the updated pixel color to the hardware.
 
 }
