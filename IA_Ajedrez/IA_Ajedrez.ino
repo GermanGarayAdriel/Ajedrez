@@ -14,6 +14,7 @@ struct Pieza {
 };
 Pieza tablero[8][8];
 int total[16][2];
+int total2[16][2];
 void Inicializar_Tablero(Pieza Tablero[8][8]);
 void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox);
 bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox);
@@ -24,7 +25,7 @@ bool jaquemate(Pieza Tablero[8][8], bool color);
 bool matar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox);
 bool puedeComer(Pieza tablero[8][8], int movimiento[2]);
 bool puedoMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]);
-bool Inteligencia(Pieza tablero[8][8],int cordenada[2],int movimiento[2]);
+bool Inteligencia(Pieza tablero[8][8], int cordenada[2], int movimiento[2]);
 
 void setup() {
   // put your setup code here, to run once:
@@ -95,7 +96,7 @@ void loop() {
 
     antiloop = true;
     while (antiloop) {
-      Inteligencia(tablero,coordenada,movimiento);
+      Inteligencia(tablero, coordenada, movimiento);
       cordenaday = coordenada[0];
       cordenadax = coordenada[1];
       movimientoy = movimiento[0];
@@ -223,7 +224,7 @@ bool puedeComer(Pieza tablero[8][8], int movimiento[2], int coordenada[2]) {
   for (int i = 0; i < 16; i++) {
     if (total[i][0] != 100) {
       if (tablero[total[i][0]][total[i][1]].id_pieza == 6) {
-        if (total[i][0] + 1 >= 0 && total[i][1] - 1 >= 0) {
+        if (total[i][0] + 1 < 8 && total[i][1] - 1 >= 0) {
           if (matar(tablero, total[i][0], total[i][1], total[i][0] + 1, total[i][1] - 1) && tablero[total[i][0] + 1][total[i][1] - 1].id_pieza != 100) {
             movimiento[0] = total[i][0] + 1;
             movimiento[1] = total[i][1] - 1;
@@ -232,7 +233,7 @@ bool puedeComer(Pieza tablero[8][8], int movimiento[2], int coordenada[2]) {
             return true;
           }
         }
-        if (total[i][0] + 1 >= 0 && total[i][1] + 1 < 8) {
+        if (total[i][0] + 1 < 8 && total[i][1] + 1 < 8) {
           if (matar(tablero, total[i][0], total[i][1], total[i][0] + 1, total[i][1] + 1) && tablero[total[i][0] + 1][total[i][1] + 1].id_pieza != 100) {
             movimiento[0] = total[i][0] + 1;
             movimiento[1] = total[i][1] + 1;
@@ -490,7 +491,277 @@ bool puedeComer(Pieza tablero[8][8], int movimiento[2], int coordenada[2]) {
   }
   return false;
 }
-
+bool puedeComer2(Pieza tablero[8][8], int movimiento[2], int coordenada[2]) {
+  for (int i = 0; i < 16; i++) {
+    if (total2[i][0] != 100) {
+      if (tablero[total2[i][0]][total2[i][1]].id_pieza == 6) {
+        if (total2[i][0] - 1 >= 0 && total2[i][1] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1] - 1) && tablero[total2[i][0] - 1][total2[i][1] - 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1] - 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 1 >= 0 && total2[i][1] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1] + 1) && tablero[total2[i][0] - 1][total2[i][1] + 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1] + 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+      }
+      else if (tablero[total2[i][0]][total2[i][1]].id_pieza == caballo) {
+        if (total2[i][0] + 2 < 8 && total2[i][1] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 2, total2[i][1] + 1) && tablero[total2[i][0] + 2][total2[i][1] + 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 2;
+            movimiento[1] = total2[i][1] + 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] + 2 < 8 && total2[i][1] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 2, total2[i][1] - 1) && tablero[total2[i][0] + 2][total2[i][1] - 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 2;
+            movimiento[1] = total2[i][1] - 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 2 >= 0 && total2[i][1] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 2, total2[i][1] + 1) && tablero[total2[i][0] - 2][total2[i][1] + 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 2;
+            movimiento[1] = total2[i][1] + 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 2 >= 0 && total2[i][1] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 2, total2[i][1] - 1) && tablero[total2[i][0] - 2][total2[i][1] - 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 2;
+            movimiento[1] = total2[i][1] - 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] + 1 < 8 && total2[i][1] + 2 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 1, total2[i][1] + 2) && tablero[total2[i][0] + 1][total2[i][1] + 2].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 1;
+            movimiento[1] = total2[i][1] + 2;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 1 >= 0 && total2[i][1] + 2 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1] + 2) && tablero[total2[i][0] - 1][total2[i][1] + 2].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1] + 2;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] + 1 < 8 && total2[i][1] - 2 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 1, total2[i][1] - 2) && tablero[total2[i][0] + 1][total2[i][1] - 2].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 1;
+            movimiento[1] = total2[i][1] - 2;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 1 >= 0 && total2[i][1] - 2 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1] - 2) && tablero[total2[i][0] - 1][total2[i][1] - 2].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1] - 2;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+      }
+      if (tablero[total2[i][0]][total2[i][1]].id_pieza == 4 || tablero[total2[i][0]][total2[i][1]].id_pieza == 2) {
+        for (int m = 0; m < 8; m++) {
+          if (total2[i][0] + m < 8 && total2[i][1] + m < 8) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + m, total2[i][1] + m) && tablero[total2[i][0] + m][total2[i][1] + m].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0] + m, total2[i][1] + m)) {
+                movimiento[0] = total2[i][0] + m;
+                movimiento[1] = total2[i][1] + m;
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+          if (total2[i][0] - m >= 0 && total2[i][1] + m < 8) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - m, total2[i][1] + m) && tablero[total2[i][0] - m][total2[i][1] + m].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0] - m, total2[i][1] + m)) {
+                movimiento[0] = total2[i][0] - m;
+                movimiento[1] = total2[i][1] + m;
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+          if (total2[i][0] + m < 8 && total2[i][1] - m >= 0) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + m, total2[i][1] - m) && tablero[total2[i][0] + m][total2[i][1] - m].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0] + m, total2[i][1] - m)) {
+                movimiento[0] = total2[i][0] + m;
+                movimiento[1] = total2[i][1] - m;
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+          if (total2[i][0] - m >= 0 && total2[i][1] - m >= 0) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - m, total2[i][1] - m) && tablero[total2[i][0] - m][total2[i][1] - m].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0] - m, total2[i][1] - m)) {
+                movimiento[0] = total2[i][0] - m;
+                movimiento[1] = total2[i][1] - m;
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+        }
+      }
+      if (tablero[total2[i][0]][total2[i][1]].id_pieza == 3 || tablero[total2[i][0]][total2[i][1]].id_pieza == 2) {
+        for (int m = 0; m < 8; m++) {
+          if (total2[i][1] + m < 8) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0], total2[i][1] + m) && tablero[total2[i][0]][total2[i][1] + m].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0], total2[i][1] + m)) {
+                movimiento[0] = total2[i][0];
+                movimiento[1] = total2[i][1] + m;
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+          if (total2[i][1] - m >= 0) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0], total2[i][1] - m) && tablero[total2[i][0]][total2[i][1] - m].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0], total2[i][1] - m)) {
+                movimiento[0] = total2[i][0];
+                movimiento[1] = total2[i][1] - m;
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+          if (total2[i][0] + m < 8) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + m, total2[i][1]) && tablero[total2[i][0] + m][total2[i][1]].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0] + m, total2[i][1])) {
+                movimiento[0] = total2[i][0] + m;
+                movimiento[1] = total2[i][1];
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+          if (total2[i][0] - m >= 0) {
+            if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - m, total2[i][1]) && tablero[total2[i][0] - m][total2[i][1]].id_pieza != 100) {
+              if (intercepcion(tablero, total2[i][0], total2[i][1], total2[i][0] - m, total2[i][1])) {
+                movimiento[0] = total2[i][0] - m;
+                movimiento[1] = total2[i][1];
+                coordenada[0] = total2[i][0];
+                coordenada[1] = total2[i][1];
+                return true;
+              }
+            }
+          }
+        }
+      }
+      if (tablero[total2[i][0]][total2[i][1]].id_pieza == 1) {
+        if (total2[i][0] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 1, total2[i][1]) && tablero[total2[i][0] + 1][total2[i][1]].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 1;
+            movimiento[1] = total2[i][1];
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1]) && tablero[total2[i][0] - 1][total2[i][1]].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1];
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][1] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0], total2[i][1] + 1) && tablero[total2[i][0]][total2[i][1] + 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0];
+            movimiento[1] = total2[i][1] + 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][1] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0], total2[i][1] - 1) && tablero[total2[i][0]][total2[i][1] - 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0];
+            movimiento[1] = total2[i][1] - 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] + 1 < 8 && total2[i][1] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 1, total2[i][1] + 1) && tablero[total2[i][0] + 1][total2[i][1] + 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 1;
+            movimiento[1] = total2[i][1] + 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] - 1 >= 0 && total2[i][1] + 1 < 8) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1] + 1) && tablero[total2[i][0] - 1][total2[i][1] + 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1] + 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][0] + 1 < 8 && total2[i][1] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] + 1, total2[i][1] - 1) && tablero[total2[i][0] + 1][total2[i][1] - 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] + 1;
+            movimiento[1] = total2[i][1] - 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+        if (total2[i][1] - 1 >= 0 && total2[i][0] - 1 >= 0) {
+          if (matar(tablero, total2[i][0], total2[i][1], total2[i][0] - 1, total2[i][1] - 1) && tablero[total2[i][0] - 1][total2[i][1] - 1].id_pieza != 100) {
+            movimiento[0] = total2[i][0] - 1;
+            movimiento[1] = total2[i][1] - 1;
+            coordenada[0] = total2[i][0];
+            coordenada[1] = total2[i][1];
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
 
 bool puedoMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]) {
   Pieza piezaAux = tablero[coordenaday][coordenadax];
@@ -629,6 +900,143 @@ bool puedoMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movim
   }
   return false;
 }
+bool puedoMover2(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]) {
+  Pieza piezaAux = tablero[coordenaday][coordenadax];
+  if (piezaAux.id_pieza == peon) { // si la pieza es un peon ejecuta alguna de las siguientes opciones
+    if (coordenaday == 6) { // quiere hacer salto doble y para eso verifica que este en la linea del principio
+      if (matar(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax)) { // verifica que no haya nadie en el camino ni en el lugara saltar
+        movimiento[0] = coordenaday - 2;
+        movimiento[1] = coordenadax;
+        return true; //mueve y avisa que pudo mover
+      }
+      if (matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax)) { // de no poder moverse dos puestos intentara moverse uno
+        movimiento[0] = coordenaday - 1;
+        movimiento[1] = coordenadax;
+        return true;
+      }
+    }
+    else if (matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax)) { // de no estar en la linea del principio solo se movera un puesto
+      movimiento[0] = coordenaday - 1;
+      movimiento[1] = coordenadax;
+      return true;
+    }
+  }
+  if (piezaAux.id_pieza == caballo) { // si es un caballo
+    if (coordenaday - 2 >= 0) { // limite para que no se pase
+      if (coordenadax + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday - 2, coordenadax + 1)) { // limite y verificacion
+        movimiento[0] = coordenaday - 2;
+        movimiento[1] = coordenadax + 1;
+        return true;
+      }
+      if (coordenadax - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday - 2, coordenadax - 1)) {
+        movimiento[0] = coordenaday - 2;
+        movimiento[1] = coordenadax - 1;
+        return true;
+      }
+    }
+    if (coordenadax + 2 < 8) {
+      if (coordenaday - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday - 1, coordenadax + 2)) {
+        movimiento[0] = coordenaday - 1;
+        movimiento[1] = coordenadax + 2;
+        return true;
+      }
+      if (coordenaday + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax + 2)) {
+        movimiento[0] = coordenaday + 1;
+        movimiento[1] = coordenadax + 2;
+        return true;
+      }
+    }
+    if (coordenadax - 2 >= 0) {
+      if (coordenaday + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax - 2)) {
+        movimiento[0] = coordenaday + 1;
+        movimiento[1] = coordenadax - 2;
+        return true;
+      }
+      if (coordenaday - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday - 1, coordenadax - 2)) {
+        movimiento[0] = coordenaday - 1;
+        movimiento[1] = coordenadax - 2;
+        return true;
+      }
+    }
+    if (coordenaday + 2 < 8) { // solo va para atras en ultima instancia
+      if (coordenadax + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax + 1)) { // limite y verificacion
+        movimiento[0] = coordenaday + 2;
+        movimiento[1] = coordenadax + 1;
+        return true;
+      }
+      if (coordenadax - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax - 1)) {
+        movimiento[0] = coordenaday + 2;
+        movimiento[1] = coordenadax - 1;
+        return true;
+      }
+    }
+  }
+  if (piezaAux.id_pieza == alfil || piezaAux.id_pieza == reina) {
+    for (int m = 8; m >= 0; m = m - 1) {
+      if (coordenaday - m < 8 && coordenadax - m < 8 && coordenaday - m >= 0 && coordenadax - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax - m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax - m)) {
+          movimiento[0] = coordenaday - m;
+          movimiento[1] = coordenadax - m;
+          return true;
+        }
+      }
+      if (coordenaday + m < 8 && coordenadax - m < 8 && coordenaday + m >= 0 && coordenadax - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax - m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax - m)) {
+          movimiento[0] = coordenaday + m;
+          movimiento[1] = coordenadax - m;
+          return true;
+        }
+      }
+      if (coordenaday - m < 8 && coordenadax + m < 8 && coordenaday - m >= 0 && coordenadax + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax + m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax + m)) {
+          movimiento[0] = coordenaday - m;
+          movimiento[1] = coordenadax + m;
+          return true;
+        }
+      }
+      if (coordenaday + m < 8 && coordenadax + m < 8 && coordenaday + m >= 0 && coordenadax + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax + m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax + m)) {
+          movimiento[0] = coordenaday + m;
+          movimiento[1] = coordenadax + m;
+          return true;
+        }
+      }
+    }
+  }
+  if (piezaAux.id_pieza == torre || piezaAux.id_pieza == reina) {
+    for (int m = 8; m >= 0; m = m - 1) {
+      if (coordenaday - m < 8 && coordenaday - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax) && intercepcion(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax)) {
+          movimiento[0] = coordenaday - m;
+          movimiento[1] = coordenadax;
+          return true;
+        }
+      }
+      if (coordenadax + m < 8 && coordenadax + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday, coordenadax + m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday, coordenadax + m)) {
+          movimiento[0] = coordenaday;
+          movimiento[1] = coordenadax + m;
+          return true;
+        }
+      }
+      if (coordenadax - m < 8 && coordenadax - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday, coordenadax - m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday, coordenadax - m)) {
+          movimiento[0] = coordenaday;
+          movimiento[1] = coordenadax - m;
+          return true;
+        }
+      }
+      if (coordenaday + m < 8 && coordenaday + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax)) {
+          movimiento[0] = coordenaday + m;
+          movimiento[1] = coordenadax;
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
 
 
 void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox) { //Cambia la pieza de un lugar a otro
@@ -644,7 +1052,16 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimiento
       total[i][0] = 100;
       total[i][1] = 100;
     }
-
+  }
+  for (int i = 0; i < 16; i++) {
+    if (total2[i][0] == cordenaday && total2[i][1] == cordenadax) {
+      total2[i][0] = movimientoy;
+      total2[i][1] = movimientox;
+    }
+    else if (total2[i][0] == movimientoy && total2[i][1] == movimientox) {
+      total2[i][0] = 100;
+      total2[i][1] = 100;
+    }
   }
   Tablero[movimientoy][movimientox].id_pieza = Tablero[cordenaday][cordenadax].id_pieza;
   Tablero[movimientoy][movimientox].color = Tablero[cordenaday][cordenadax].color;
@@ -671,6 +1088,7 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimiento
 
 void Inicializar_Tablero(Pieza Tablero[8][8]) {
   int pasando = 0;
+  int pasando2 = 0;
   for (int y = 0; y < 8;  y++) {
     for (int x = 0; x < 8; x++) {
       //a partir de aca pone las fichas negras
@@ -736,6 +1154,9 @@ void Inicializar_Tablero(Pieza Tablero[8][8]) {
       }
       // a partir de aca es con las fichas blancas
       else if ((x == 0 || x == 7) && y == 7) {
+        total2[pasando2][0] = y;
+        total2[pasando2][1] = x;
+        pasando2 = pasando2 + 1;
         Tablero[y][x].id_pieza = torre;
         Tablero[y][x].color = false;
         Tablero[y][x].movimiento = true;
@@ -743,6 +1164,9 @@ void Inicializar_Tablero(Pieza Tablero[8][8]) {
         Tablero[y][x].posicionOrigenY = y;
       }
       else if ((x == 2 || x == 5) && y == 7) {
+        total2[pasando2][0] = y;
+        total2[pasando2][1] = x;
+        pasando2 = pasando2 + 1;
         Tablero[y][x].id_pieza = alfil;
         Tablero[y][x].color = false;
         Tablero[y][x].movimiento = false;
@@ -750,6 +1174,9 @@ void Inicializar_Tablero(Pieza Tablero[8][8]) {
         Tablero[y][x].posicionOrigenY = y;
       }
       else if ((x == 1 || x == 6) && y == 7) {
+        total2[pasando2][0] = y;
+        total2[pasando2][1] = x;
+        pasando2 = pasando2 + 1;
         Tablero[y][x].id_pieza = caballo;
         Tablero[y][x].color = false;
         Tablero[y][x].movimiento = false;
@@ -757,6 +1184,9 @@ void Inicializar_Tablero(Pieza Tablero[8][8]) {
         Tablero[y][x].posicionOrigenY = y;
       }
       else if (x == 3 && y == 7) {
+        total2[pasando2][0] = y;
+        total2[pasando2][1] = x;
+        pasando2 = pasando2 + 1;
         Tablero[y][x].id_pieza = reina;
         Tablero[y][x].color = false;
         Tablero[y][x].movimiento = false;
@@ -764,6 +1194,9 @@ void Inicializar_Tablero(Pieza Tablero[8][8]) {
         Tablero[y][x].posicionOrigenY = y;
       }
       else if (x == 4 && y == 7) {
+        total2[pasando2][0] = y;
+        total2[pasando2][1] = x;
+        pasando2 = pasando2 + 1;
         Tablero[y][x].id_pieza = rey;
         Tablero[y][x].color = false;
         Tablero[y][x].movimiento = true;
@@ -771,6 +1204,9 @@ void Inicializar_Tablero(Pieza Tablero[8][8]) {
         Tablero[y][x].posicionOrigenY = y;
       }
       else if (y == 6) {
+        total2[pasando2][0] = y;
+        total2[pasando2][1] = x;
+        pasando2 = pasando2 + 1;
         Tablero[y][x].id_pieza = peon;
         Tablero[y][x].color = false;
         Tablero[y][x].movimiento = false;
@@ -1243,7 +1679,7 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movim
   return true;
 }
 
-bool Inteligencia(Pieza tablero[8][8],int cordenada[2],int movimiento[2]) {
+bool Inteligencia(Pieza tablero[8][8], int cordenada[2], int movimiento[2]) {
   bool entrar = true;
   if (puedeComer(tablero, movimiento, cordenada)) {
     cordenada[1];
@@ -1259,6 +1695,30 @@ bool Inteligencia(Pieza tablero[8][8],int cordenada[2],int movimiento[2]) {
       cordenada[0] = total[ran][0];
       cordenada[1] = total[ran][1];
       if (puedoMover(tablero, total[ran][0], total[ran][1], movimiento)) {
+        movimiento[0];
+        movimiento[1];
+        entrar = false;
+      }
+    }
+  }
+  return true;
+}
+bool Inteligencia2(Pieza tablero[8][8], int cordenada[2], int movimiento[2]) {
+  bool entrar = true;
+  if (puedeComer2(tablero, movimiento, cordenada)) {
+    cordenada[1];
+    cordenada[0];
+    movimiento[0];
+    movimiento[1];
+  }
+  else {
+    Serial.println("aun no puede comer");
+    int ran = 0;
+    while (entrar) {
+      ran = random(0, 15);
+      cordenada[0] = total[ran][0];
+      cordenada[1] = total[ran][1];
+      if (puedoMover2(tablero, total[ran][0], total[ran][1], movimiento)) {
         movimiento[0];
         movimiento[1];
         entrar = false;
