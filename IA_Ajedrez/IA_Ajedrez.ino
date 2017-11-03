@@ -23,12 +23,13 @@ bool jaque(Pieza Tablero[8][8], bool color);
 bool jaquemate(Pieza Tablero[8][8], bool color);
 bool matar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox);
 bool puedeComer(Pieza tablero[8][8], int movimiento[2]);
-bool puedeMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]);
+bool puedoMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]);
 
 void setup() {
   // put your setup code here, to run once:
   int incomingByte = 0;
   Serial.begin(9600);
+  randomSeed(analogRead(0));
 }
 
 void loop() {
@@ -90,47 +91,42 @@ void loop() {
       Serial.println();
       Serial.println("---------------------------------");
     }
-    if (puedeComer(tablero, movimiento, coordenada)) {
-      Serial.print("pieza: ");
-      Serial.print(tablero[movimiento[0]][movimiento[1]].id_pieza);
-      Serial.print(" my: ");
-      Serial.print(movimiento[0]);
-      Serial.print(" mx: ");
-      Serial.print(movimiento[1]);
-      Serial.print(" dy: ");
-      Serial.print(coordenada[0]);
-      Serial.print(" cx: ");
-      Serial.println(coordenada[1]);
-    }
-    else {
-      Serial.println("aun no puede comer");
-    }
+
     antiloop = true;
     while (antiloop) {
       entrar = true;
       int letra = 0;
-      while (entrar) {
-        if (Serial.available() > 0) {
-          // lee el byte de entrada:
-          incomingByte = Serial.read();
-          if (letra == 0) {
-            cordenaday = incomingByte - 48;
-          }
-          else if (letra == 1) {
-            cordenadax = incomingByte - 48;
-          }
-          else if (letra == 2) {
-            movimientoy = incomingByte - 48;
-          }
-          else if (letra == 3) {
-            movimientox = incomingByte - 48;
-            entrar = false;
-          }
-          letra = letra + 1;
-          //lo vuelca a pantalla
-          Serial.print("He recibido: "); Serial.println(incomingByte - 48, DEC);
+      if (puedeComer(tablero, movimiento, coordenada)) {
+        Serial.print("pieza: ");
+        Serial.print(tablero[movimiento[0]][movimiento[1]].id_pieza);
+        Serial.print(" my: ");
+        Serial.print(movimiento[0]);
+        Serial.print(" mx: ");
+        Serial.print(movimiento[1]);
+        Serial.print(" dy: ");
+        Serial.print(coordenada[0]);
+        Serial.print(" cx: ");
+        Serial.println(coordenada[1]);
+        cordenadax = coordenada[1];
+        cordenaday = coordenada[0];
+        movimientoy = movimiento[0];
+        movimientox = movimiento[1];
+      }
+      else {
+        Serial.println("aun no puede comer");
+        int ran = 0;
+        while (entrar) {
+            ran = random(0,15);
+            cordenaday = total[ran][0];
+            cordenadax = total[ran][1];
+            if(puedoMover(tablero,total[ran][0],total[ran][1],movimiento)){
+              movimientoy = movimiento[0];
+              movimientox = movimiento[1];
+              entrar = false;
+            }
         }
       }
+
       Serial.println("paso");
       if (jaquemate(tablero, true)) {
         Serial.println("rey blanco no existe, fin del juego. Ganan negras");
@@ -523,101 +519,142 @@ bool puedeComer(Pieza tablero[8][8], int movimiento[2], int coordenada[2]) {
 }
 
 
-bool puedeMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]){
+bool puedoMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]) {
   Pieza piezaAux = tablero[coordenaday][coordenadax];
-  if(piezaAux.id_pieza == peon){ // si la pieza es un peon ejecuta alguna de las siguientes opciones
-    if(coordenaday == 6){ // quiere hacer salto doble y para eso verifica que este en la linea del principio
-      if(matar(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax) && intercepcion(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax){ // verifica que no haya nadie en el camino ni en el lugara saltar
+  if (piezaAux.id_pieza == peon) { // si la pieza es un peon ejecuta alguna de las siguientes opciones
+    if (coordenaday == 6) { // quiere hacer salto doble y para eso verifica que este en la linea del principio
+      if (matar(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax)) { // verifica que no haya nadie en el camino ni en el lugara saltar
         movimiento[0] = coordenaday + 2;
         movimiento[1] = coordenadax;
         return true; //mueve y avisa que pudo mover
       }
-      if(matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax)){// de no poder moverse dos puestos intentara moverse uno
+      if (matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax)) { // de no poder moverse dos puestos intentara moverse uno
         movimiento[0] = coordenaday + 1;
         movimiento[1] = coordenadax;
         return true;
       }
     }
-    else if(matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax)){ // de no estar en la linea del principio solo se movera un puesto
+    else if (matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax)) { // de no estar en la linea del principio solo se movera un puesto
       movimiento[0] = coordenaday + 1;
       movimiento[1] = coordenadax;
       return true;
     }
   }
-  if(piezaAux.id_pieza == caballo){ // si es un caballo 
-    if(coordenaday + 2 < 8){ // limite para que no se pase
-      if(coordenadax + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax + 1){ // limite y verificacion
+  if (piezaAux.id_pieza == caballo) { // si es un caballo
+    if (coordenaday + 2 < 8) { // limite para que no se pase
+      if (coordenadax + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax + 1)) { // limite y verificacion
         movimiento[0] = coordenaday + 2;
         movimiento[1] = coordenadax + 1;
         return true;
       }
-      if(coordenadax - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax - 1){
+      if (coordenadax - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday + 2, coordenadax - 1)) {
         movimiento[0] = coordenaday + 2;
         movimiento[1] = coordenadax - 1;
         return true;
       }
     }
-    if(coordenadax + 2 < 8){
-      if(coordenaday + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax + 2){
+    if (coordenadax + 2 < 8) {
+      if (coordenaday + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax + 2)) {
         movimiento[0] = coordenaday + 1;
         movimiento[1] = coordenadax + 2;
         return true;
       }
-      if(coordenaday - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday - 1,coordenada + 2){
+      if (coordenaday - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday - 1, coordenadax + 2)) {
         movimiento[0] = coordenaday - 1;
         movimiento[1] = coordenadax + 2;
         return true;
       }
     }
-    if(coordenadax - 2 >= 0){
-      if(coordenaday + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax - 2){
+    if (coordenadax - 2 >= 0) {
+      if (coordenaday + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday + 1, coordenadax - 2)) {
         movimiento[0] = coordenaday + 1;
         movimiento[1] = coordenadax - 2;
         return true;
       }
-      if(coordenaday - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday - 1,coordenada - 2){
+      if (coordenaday - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday - 1, coordenadax - 2)) {
         movimiento[0] = coordenaday - 1;
         movimiento[1] = coordenadax - 2;
         return true;
       }
     }
-    if(coordenaday - 2 >= 0){ // solo va para atras en ultima instancia
-      if(coordenadax + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday - 2,coordenadax + 1){ // limite y verificacion
+    if (coordenaday - 2 >= 0) { // solo va para atras en ultima instancia
+      if (coordenadax + 1 < 8 && matar(tablero, coordenaday, coordenadax, coordenaday - 2, coordenadax + 1)) { // limite y verificacion
         movimiento[0] = coordenaday - 2;
         movimiento[1] = coordenadax + 1;
         return true;
       }
-      if(coordenadax - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday - 2,coordenadax - 1){
+      if (coordenadax - 1 >= 0 && matar(tablero, coordenaday, coordenadax, coordenaday - 2, coordenadax - 1)) {
         movimiento[0] = coordenaday - 2;
         movimiento[1] = coordenadax - 1;
         return true;
       }
     }
   }
-  if(piezaAux.id_pieza == alfil || piezaAux.id_pieza == reina){
-    for(int m = 8;m >= 0;m = m - 1){
-      if(coordenaday + m < 8 && coordenadax + m < 8 && coordenaday + m >= 0 && coordenadax + m >= 0){
-        movimiento[0] = coardenaday + m;
-        movimiento[1] = coordenadax + m;
-        return true;
+  if (piezaAux.id_pieza == alfil || piezaAux.id_pieza == reina) {
+    for (int m = 8; m >= 0; m = m - 1) {
+      if (coordenaday + m < 8 && coordenadax + m < 8 && coordenaday + m >= 0 && coordenadax + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax + m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax + m)) {
+          movimiento[0] = coordenaday + m;
+          movimiento[1] = coordenadax + m;
+          return true;
+        }
       }
-      if(coordenaday + m < 8 && coordenadax - m < 8 && coordenaday + m >= 0 && coordenadax - m >= 0){
-        movimiento[0] = coardenaday + m;
-        movimiento[1] = coordenadax - m;
-        return true;
+      if (coordenaday + m < 8 && coordenadax - m < 8 && coordenaday + m >= 0 && coordenadax - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax - m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax - m)) {
+          movimiento[0] = coordenaday + m;
+          movimiento[1] = coordenadax - m;
+          return true;
+        }
       }
-      if(coordenaday - m < 8 && coordenadax + m < 8 && coordenaday - m >= 0 && coordenadax + m >= 0){
-        movimiento[0] = coardenaday - m;
-        movimiento[1] = coordenadax + m;
-        return true;
+      if (coordenaday - m < 8 && coordenadax + m < 8 && coordenaday - m >= 0 && coordenadax + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax + m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax + m)) {
+          movimiento[0] = coordenaday - m;
+          movimiento[1] = coordenadax + m;
+          return true;
+        }
       }
-      if(coordenaday - m < 8 && coordenadax - m < 8 && coordenaday - m >= 0 && coordenadax - m >= 0){
-        movimiento[0] = coardenaday - m;
-        movimiento[1] = coordenadax - m;
-        return true;
+      if (coordenaday - m < 8 && coordenadax - m < 8 && coordenaday - m >= 0 && coordenadax - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax - m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax - m)) {
+          movimiento[0] = coordenaday - m;
+          movimiento[1] = coordenadax - m;
+          return true;
+        }
       }
     }
   }
+  if (piezaAux.id_pieza == torre || piezaAux.id_pieza == reina) {
+    for (int m = 8; m >= 0; m = m - 1) {
+      if (coordenaday + m < 8 && coordenaday + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax) && intercepcion(tablero, coordenaday, coordenadax, coordenaday + m, coordenadax)) {
+          movimiento[0] = coordenaday + m;
+          movimiento[1] = coordenadax;
+          return true;
+        }
+      }
+      if (coordenadax + m < 8 && coordenadax + m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday, coordenadax + m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday, coordenadax + m)) {
+          movimiento[0] = coordenaday;
+          movimiento[1] = coordenadax + m;
+          return true;
+        }
+      }
+      if (coordenadax - m < 8 && coordenadax - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday, coordenadax - m) && intercepcion(tablero, coordenaday, coordenadax, coordenaday, coordenadax - m)) {
+          movimiento[0] = coordenaday;
+          movimiento[1] = coordenadax - m;
+          return true;
+        }
+      }
+      if (coordenaday - m < 8 && coordenaday - m >= 0) {
+        if (matar(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax) && intercepcion(tablero, coordenaday, coordenadax, coordenaday - m, coordenadax)) {
+          movimiento[0] = coordenaday - m;
+          movimiento[1] = coordenadax;
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 
@@ -626,15 +663,15 @@ void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimiento
   comprobante = cordenaday - movimientoy;
   comprobante = sqrt(pow(comprobante, 2));
   for (int i = 0; i < 16; i++) {
-     if(total[i][0] == cordenaday && total[i][1] == cordenadax){
-        total[i][0] = movimientoy;
-        total[i][1] = movimientox;
-     }
-     else if(total[i][0] == movimientoy && total[i][1] == movimientox){
-        total[i][0] = 100;
-        total[i][1] = 100;
-     }
-    
+    if (total[i][0] == cordenaday && total[i][1] == cordenadax) {
+      total[i][0] = movimientoy;
+      total[i][1] = movimientox;
+    }
+    else if (total[i][0] == movimientoy && total[i][1] == movimientox) {
+      total[i][0] = 100;
+      total[i][1] = 100;
+    }
+
   }
   Tablero[movimientoy][movimientox].id_pieza = Tablero[cordenaday][cordenadax].id_pieza;
   Tablero[movimientoy][movimientox].color = Tablero[cordenaday][cordenadax].color;
