@@ -24,6 +24,7 @@ bool jaquemate(Pieza Tablero[8][8], bool color);
 bool matar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox);
 bool puedeComer(Pieza tablero[8][8], int movimiento[2]);
 bool puedoMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]);
+bool Inteligencia(Pieza tablero[8][8],int cordenada[2],int movimiento[2]);
 
 void setup() {
   // put your setup code here, to run once:
@@ -94,39 +95,11 @@ void loop() {
 
     antiloop = true;
     while (antiloop) {
-      entrar = true;
-      int letra = 0;
-      if (puedeComer(tablero, movimiento, coordenada)) {
-        Serial.print("pieza: ");
-        Serial.print(tablero[movimiento[0]][movimiento[1]].id_pieza);
-        Serial.print(" my: ");
-        Serial.print(movimiento[0]);
-        Serial.print(" mx: ");
-        Serial.print(movimiento[1]);
-        Serial.print(" dy: ");
-        Serial.print(coordenada[0]);
-        Serial.print(" cx: ");
-        Serial.println(coordenada[1]);
-        cordenadax = coordenada[1];
-        cordenaday = coordenada[0];
-        movimientoy = movimiento[0];
-        movimientox = movimiento[1];
-      }
-      else {
-        Serial.println("aun no puede comer");
-        int ran = 0;
-        while (entrar) {
-            ran = random(0,15);
-            cordenaday = total[ran][0];
-            cordenadax = total[ran][1];
-            if(puedoMover(tablero,total[ran][0],total[ran][1],movimiento)){
-              movimientoy = movimiento[0];
-              movimientox = movimiento[1];
-              entrar = false;
-            }
-        }
-      }
-
+      Inteligencia(tablero,coordenada,movimiento);
+      cordenaday = coordenada[0];
+      cordenadax = coordenada[1];
+      movimientoy = movimiento[0];
+      movimientox = movimiento[1];
       Serial.println("paso");
       if (jaquemate(tablero, true)) {
         Serial.println("rey blanco no existe, fin del juego. Ganan negras");
@@ -1269,3 +1242,29 @@ bool intercepcion(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movim
   }
   return true;
 }
+
+bool Inteligencia(Pieza tablero[8][8],int cordenada[2],int movimiento[2]) {
+  bool entrar = true;
+  if (puedeComer(tablero, movimiento, cordenada)) {
+    cordenada[1];
+    cordenada[0];
+    movimiento[0];
+    movimiento[1];
+  }
+  else {
+    Serial.println("aun no puede comer");
+    int ran = 0;
+    while (entrar) {
+      ran = random(0, 15);
+      cordenada[0] = total[ran][0];
+      cordenada[1] = total[ran][1];
+      if (puedoMover(tablero, total[ran][0], total[ran][1], movimiento)) {
+        movimiento[0];
+        movimiento[1];
+        entrar = false;
+      }
+    }
+  }
+  return true;
+}
+
