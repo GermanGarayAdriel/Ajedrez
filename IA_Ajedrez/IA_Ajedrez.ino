@@ -523,7 +523,102 @@ bool puedeComer(Pieza tablero[8][8], int movimiento[2], int coordenada[2]) {
 }
 
 
-
+bool puedeMover(Pieza tablero[8][8], int coordenaday, int coordenadax, int movimiento[2]){
+  Pieza piezaAux = tablero[coordenaday][coordenadax];
+  if(piezaAux.id_pieza == peon){ // si la pieza es un peon ejecuta alguna de las siguientes opciones
+    if(coordenaday == 6){ // quiere hacer salto doble y para eso verifica que este en la linea del principio
+      if(matar(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax) && intercepcion(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax){ // verifica que no haya nadie en el camino ni en el lugara saltar
+        movimiento[0] = coordenaday + 2;
+        movimiento[1] = coordenadax;
+        return true; //mueve y avisa que pudo mover
+      }
+      if(matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax)){// de no poder moverse dos puestos intentara moverse uno
+        movimiento[0] = coordenaday + 1;
+        movimiento[1] = coordenadax;
+        return true;
+      }
+    }
+    else if(matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax)){ // de no estar en la linea del principio solo se movera un puesto
+      movimiento[0] = coordenaday + 1;
+      movimiento[1] = coordenadax;
+      return true;
+    }
+  }
+  if(piezaAux.id_pieza == caballo){ // si es un caballo 
+    if(coordenaday + 2 < 8){ // limite para que no se pase
+      if(coordenadax + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax + 1){ // limite y verificacion
+        movimiento[0] = coordenaday + 2;
+        movimiento[1] = coordenadax + 1;
+        return true;
+      }
+      if(coordenadax - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday + 2,coordenadax - 1){
+        movimiento[0] = coordenaday + 2;
+        movimiento[1] = coordenadax - 1;
+        return true;
+      }
+    }
+    if(coordenadax + 2 < 8){
+      if(coordenaday + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax + 2){
+        movimiento[0] = coordenaday + 1;
+        movimiento[1] = coordenadax + 2;
+        return true;
+      }
+      if(coordenaday - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday - 1,coordenada + 2){
+        movimiento[0] = coordenaday - 1;
+        movimiento[1] = coordenadax + 2;
+        return true;
+      }
+    }
+    if(coordenadax - 2 >= 0){
+      if(coordenaday + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday + 1,coordenadax - 2){
+        movimiento[0] = coordenaday + 1;
+        movimiento[1] = coordenadax - 2;
+        return true;
+      }
+      if(coordenaday - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday - 1,coordenada - 2){
+        movimiento[0] = coordenaday - 1;
+        movimiento[1] = coordenadax - 2;
+        return true;
+      }
+    }
+    if(coordenaday - 2 >= 0){ // solo va para atras en ultima instancia
+      if(coordenadax + 1 < 8 && matar(tablero,coordenaday,coordenadax,coordenaday - 2,coordenadax + 1){ // limite y verificacion
+        movimiento[0] = coordenaday - 2;
+        movimiento[1] = coordenadax + 1;
+        return true;
+      }
+      if(coordenadax - 1 >= 0 && matar(tablero,coordenaday,coordenadax,coordenaday - 2,coordenadax - 1){
+        movimiento[0] = coordenaday - 2;
+        movimiento[1] = coordenadax - 1;
+        return true;
+      }
+    }
+  }
+  if(piezaAux.id_pieza == alfil || piezaAux.id_pieza == reina){
+    for(int m = 8;m >= 0;m = m - 1){
+      if(coordenaday + m < 8 && coordenadax + m < 8 && coordenaday + m >= 0 && coordenadax + m >= 0){
+        movimiento[0] = coardenaday + m;
+        movimiento[1] = coordenadax + m;
+        return true;
+      }
+      if(coordenaday + m < 8 && coordenadax - m < 8 && coordenaday + m >= 0 && coordenadax - m >= 0){
+        movimiento[0] = coardenaday + m;
+        movimiento[1] = coordenadax - m;
+        return true;
+      }
+      if(coordenaday - m < 8 && coordenadax + m < 8 && coordenaday - m >= 0 && coordenadax + m >= 0){
+        movimiento[0] = coardenaday - m;
+        movimiento[1] = coordenadax + m;
+        return true;
+      }
+      if(coordenaday - m < 8 && coordenadax - m < 8 && coordenaday - m >= 0 && coordenadax - m >= 0){
+        movimiento[0] = coardenaday - m;
+        movimiento[1] = coordenadax - m;
+        return true;
+      }
+    }
+  }
+}
 
 
 void cambiar(Pieza Tablero[8][8], int cordenaday, int cordenadax, int movimientoy, int movimientox) { //Cambia la pieza de un lugar a otro
