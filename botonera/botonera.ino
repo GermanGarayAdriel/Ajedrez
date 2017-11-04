@@ -1,4 +1,3 @@
-#include "FastLED.h"
 #include "TM1637.h"
 #include <LiquidCrystal.h>
 #include <Adafruit_NeoPixel.h>
@@ -155,9 +154,6 @@ void mostrar_estado_tablero()
 
 void setup()
 {
-  // the wiki features a much more basic setup line:
-  FastLED.addLeds<LED_TYPE, STRIP, COLOR_ORDER>(leds, NUM_LEDS);
-
   // Initialize our digital pins...
   pinMode(LOAD, OUTPUT);
   pinMode(ENABLE, OUTPUT);
@@ -192,6 +188,7 @@ void setup()
 int apreto = 0;
 bool todavia = false;
 void loop() {
+  //esto no solo es prueba, tecnicamente no sirve
   // Read the state of all zones
   leer_registros();
   // If there was a chage in state, display which ones changed
@@ -199,7 +196,7 @@ void loop() {
     mostrar_estado_tablero();
     guardar_estado_tablero();
   }
-  // entra
+  // se utiliza el boton y no lo toma como valido hasta que lo suelta
   if (digitalRead(boton) == LOW) {
     todavia = true;
   }
@@ -209,6 +206,7 @@ void loop() {
     }
     todavia = false;
   }
+  //se utiliza el reloj del boton
   if (apreto == 1) {
     centesimas++;
     if (centesimas == 440) {
@@ -227,11 +225,13 @@ void loop() {
     botonLed.setPixelColor(0, botonLed.Color(0, 255, 0)); // Rojo: (255, 0, 0)), Azul: (0, 0, 255));
     botonLed.show(); // This sends the updated pixel color to the hardware.
   }
+  //aca muestra el reloj y usa esta cuenta porque, mas o menos, hace 4 loops en 1 segundo.
   if (centesimas % 4 == 0) {
     numero = (centesimas / 4) + decimas * 10 + segundos * 100;
     muestraNumero(numero);
   }
   delay(10);
+  // esta funcion solo cambia el color dependiendo si esta corriendo el tiempo o no (creo que no funciona. Hay que verificar)
   if (apreto == 0) {
     botonLed.setPixelColor(0, botonLed.Color(255, 0, 0)); // Rojo: (255, 0, 0)), Azul: (0, 0, 255));
     botonLed.show(); // This sends the updated pixel color to the hardware.
