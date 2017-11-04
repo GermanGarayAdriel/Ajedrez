@@ -173,7 +173,6 @@ void loop() {
     while (antiloop) {
       entrar = true;
       int letra = 0;
-
       while (entrar) {
         delay(100);
         numero++;
