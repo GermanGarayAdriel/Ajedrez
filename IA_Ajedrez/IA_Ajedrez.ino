@@ -32,6 +32,8 @@ void setup() {
   int incomingByte = 0;
   Serial.begin(9600);
   randomSeed(analogRead(0));
+  pinMode(8, INPUT);
+  pinMode(9, OUTPUT);
 }
 
 void loop() {
@@ -46,6 +48,8 @@ void loop() {
   int incomingByte;
   int movimiento[2];
   int coordenada[2];
+  int numero = 0;
+  int segundos = 0;
   for (int i = 0; i < 16; i++) {
     if (total[i][0] != 100) {
       Serial.print("pieza: ");
@@ -127,6 +131,7 @@ void loop() {
         antiloop = true;
       }
     }
+
     Serial.println();
     for (int y = 0; y < 8; y++) {
       if (y == 0) {
@@ -163,12 +168,15 @@ void loop() {
       Serial.println();
       Serial.println("---------------------------------");
     }
+    digitalWrite(9, HIGH);
     antiloop = true;
     while (antiloop) {
       entrar = true;
       int letra = 0;
 
       while (entrar) {
+        delay(100);
+        numero++;
         if (Serial.available() > 0) {
           // lee el byte de entrada:
           incomingByte = Serial.read();
@@ -188,6 +196,11 @@ void loop() {
           letra = letra + 1;
           //lo vuelca a pantalla
           Serial.print("He recibido: "); Serial.println(incomingByte - 48, DEC);
+        }
+        if (numero == 10) {
+          segundos++;
+          numero = 0;
+          Serial.println(segundos);
         }
       }
       Serial.println("paso");
@@ -213,6 +226,29 @@ void loop() {
       else {
         Serial.println("movimiento incorrecto");
         antiloop = true;
+      }
+    }
+    bool todavia = false;
+    int apreto = 1;
+    while (apreto == 1) {
+      delay(100);
+      numero++;
+      if (numero == 10) {
+        segundos++;
+        numero = 0;
+        Serial.println(segundos);
+      }
+      if (digitalRead(8) == HIGH) {
+        todavia = true;
+      }
+      else {
+        if (todavia) {
+          apreto = 1 - apreto;
+          segundos = 0;
+          numero = 0;
+          digitalWrite(9, LOW);
+        }
+        todavia = false;
       }
     }
   }
